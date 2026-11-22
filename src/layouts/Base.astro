@@ -1,0 +1,109 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { abs, isDraft, showBanner, meta } from '../lib/shop';
+import { langOf, t, LANGS, HTML_LANG, OG_LOCALE } from '../i18n';
+import { company } from '../data/catalog';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;            // kanoniczna ścieżka, np. "product/xyz"
+  image?: string;          // absolutny URL obrazu OG
+  noindex?: boolean;
+  jsonld?: object[];
+  ogType?: string;
+  activeNav?: string;
+}
+const { title, description, path, image, noindex, jsonld = [], ogType = 'website', activeNav } = Astro.props;
+const L = langOf(Astro.url.pathname);
+const langPath = (l: string) => (l === 'pl' ? path : path ? `${l}/${path}` : l);
+const canonical = abs(langPath(L));
+const robots = isDraft || noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large';
+const ogImage = image || 'https://gymcompression.pl/wp-content/uploads/2025/11/gym-compression-logo-background.webp';
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': 'https://gymcompression.pl/#organization',
+  name: company.name,
+  url: 'https://gymcompression.pl/',
+  email: company.email,
+  telephone: company.phone,
+  address: { '@type': 'PostalAddress', streetAddress: company.street, postalCode: company.postal, addressLocality: company.city, addressCountry: 'PL' },
+};
+---
+<html lang={HTML_LANG[L]}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="claude:viewport-fit-sides" content="cover" />
+  <title>{title}</title>
+  <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/plexsans-400.woff2" as="font" type="font/woff2" crossorigin />
+  <style is:inline>
+    /* Fonty (OFL), podzbiór: łacina + polskie znaki. Źródła: google/fonts (Archivo), IBM/plex. */
+    @font-face{font-family:'Archivo Variable';font-style:normal;font-display:swap;font-weight:400 900;font-stretch:100% 125%;src:url(/fonts/archivo-var.woff2) format('woff2')}
+    @font-face{font-family:'IBM Plex Sans';font-style:normal;font-display:swap;font-weight:400;src:url(/fonts/plexsans-400.woff2) format('woff2')}
+    @font-face{font-family:'IBM Plex Sans';font-style:normal;font-display:swap;font-weight:600;src:url(/fonts/plexsans-600.woff2) format('woff2')}
+    @font-face{font-family:'IBM Plex Mono';font-style:normal;font-display:swap;font-weight:500;src:url(/fonts/plexmono-500.woff2) format('woff2')}
+  </style>
+  <meta name="description" content={description} />
+  <meta name="robots" content={robots} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:locale" content={OG_LOCALE[L]} />
+  {path !== '404' && LANGS.map((l) => <link rel="alternate" hreflang={HTML_LANG[l]} href={abs(langPath(l))} />)}
+  {path !== '404' && <link rel="alternate" hreflang="x-default" href={abs(path)} />}
+  <meta property="og:site_name" content="Gym Compression" />
+  <meta property="og:type" content={ogType} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23101315'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='900' font-size='15' fill='white' text-anchor='middle'%3EGC%3C/text%3E%3C/svg%3E" />
+  {[org, ...jsonld].map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+</head>
+<body>
+  <a class="sr-only" href="#main">{t(L, 'Przejdź do treści')}</a>
+  {showBanner && (
+    <div class="proto" role="note">
+      <div class="wrap">
+        <strong>{t(L, 'Prototyp roboczy, nie do publikacji.')}</strong>
+        <span>{t(L, 'Koszyk i płatności to atrapa.')} {meta.fixture ? t(L, 'Zdjęcia i opisy produktów: dane tymczasowe.') : t(L, 'Zdjęcia i treści: obecny sklep gymcompression.pl (prawa do potwierdzenia).')}{L !== 'pl' ? ' ' + t(L, 'Tłumaczenie robocze do weryfikacji.') : ''}</span>
+      </div>
+    </div>
+  )}
+  <Header active={activeNav} path={path} />
+  <main id="main"><slot /></main>
+  <Footer />
+  <script is:inline>
+    // Atrapa koszyka: tylko localStorage w przeglądarce, bez zamówień i płatności.
+    (function () {
+      var KEY = 'gc-cart-v1';
+      function read() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } }
+      function write(c) { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} paint(c); }
+      function paint(c) {
+        var n = c.reduce(function (s, i) { return s + i.qty; }, 0);
+        document.querySelectorAll('[data-cart-count]').forEach(function (el) { el.textContent = n ? String(n) : ''; });
+        document.dispatchEvent(new CustomEvent('gc:cart', { detail: c }));
+      }
+      window.gcCart = {
+        read: read,
+        add: function (item) { var c = read(); var f = c.find(function (i) { return i.id === item.id && i.size === item.size; }); if (f) f.qty += 1; else c.push(Object.assign({ qty: 1 }, item)); write(c); },
+        set: function (id, size, qty) { var c = read().map(function (i) { if (i.id === id && i.size === size) i.qty = qty; return i; }).filter(function (i) { return i.qty > 0; }); write(c); },
+        clear: function () { write([]); }
+      };
+      paint(read());
+      // Menu mobilne
+      var btn = document.querySelector('[data-menu-open]'), dr = document.querySelector('[data-drawer]');
+      if (btn && dr) {
+        btn.addEventListener('click', function () { dr.hidden = false; btn.setAttribute('aria-expanded', 'true'); dr.querySelector('a,button').focus(); });
+        dr.addEventListener('click', function (e) { if (e.target === dr || e.target.closest('[data-menu-close]')) { dr.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.focus(); } });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !dr.hidden) { dr.hidden = true; btn.focus(); } });
+      }
+    })();
+  </script>
+</body>
+</html>

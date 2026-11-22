@@ -1,0 +1,66 @@
+---
+import { heights, weights, matrix, sizeTable } from '../data/sizes';
+import { company } from '../data/catalog';
+import { langOf, t } from '../i18n';
+const L = langOf(Astro.url.pathname);
+const msg = {
+  empty: t(L, 'Wpisz wzrost w cm i wagę w kg.'),
+  out: t(L, 'Te wymiary są poza tabelą dopasowania. Zadzwoń lub napisz, pomożemy dobrać rozmiar:'),
+  na: t(L, 'Ten produkt nie jest dostępny w tym rozmiarze.'),
+  forx: t(L, 'Dla {h} cm i {w} kg.'),
+  range: t(L, 'Zakres {s}: wzrost {h} cm, klatka {c} cm.'),
+};
+const { id = 'sa', available } = Astro.props as { id?: string; available?: string[] };
+const data = JSON.stringify({ heights, weights, matrix, table: sizeTable, available: available || null });
+---
+<div class="sa" data-sa={data}>
+  <div class="sa__form" role="group" aria-label={t(L, 'Kalkulator rozmiaru')}>
+    <label for={`${id}-h`}><span class="eyebrow">{t(L, 'Wzrost')}</span>
+      <span class="sa__field"><input id={`${id}-h`} name="h" type="number" inputmode="numeric" min="140" max="230" value="180" placeholder="180" /><span class="mono">cm</span></span>
+    </label>
+    <label for={`${id}-w`}><span class="eyebrow">{t(L, 'Waga')}</span>
+      <span class="sa__field"><input id={`${id}-w`} name="w" type="number" inputmode="numeric" min="40" max="180" value="82" placeholder="82" /><span class="mono">kg</span></span>
+    </label>
+    <button class="btn" type="button" data-sa-go>{t(L, 'Dobierz rozmiar')}</button>
+  </div>
+  <div class="sa__out" aria-live="polite" data-sa-out>
+    <p class="sa__hint">{t(L, 'Wpisane są przykładowe wartości: zmień je na swoje albo od razu kliknij „Dobierz rozmiar”. Wynik pochodzi z tabeli dopasowania Gym Compression.')}</p>
+  </div>
+</div>
+<style>
+  .sa { display: grid; gap: var(--s-4); }
+  .sa__form { display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--s-3); align-items: end; }
+  .sa__form label { display: grid; gap: .35rem; }
+  .sa__field { display: flex; align-items: center; gap: .5rem; border: 1px solid var(--line); border-radius: 10px; padding: 0 .9rem; background: var(--paper); height: 3.25rem; }
+  .sa__field:focus-within { border-color: var(--tape); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tape) 18%, transparent); }
+  .sa__field input { border: 0; outline: 0; width: 100%; min-width: 0; font: 600 1.15rem/1 var(--f-mono); background: transparent; color: var(--ink); }
+  .sa__field .mono { color: var(--muted); font-size: var(--t-sm); }
+  .sa__out { min-height: 3.5rem; }
+  .sa__hint { color: var(--muted); font-size: var(--t-sm); }
+  .sa__res { display: flex; gap: var(--s-4); align-items: center; padding: var(--s-4); border-radius: 12px; background: var(--paper); border: 1px solid var(--line); }
+  .sa__size { font: 900 2.4rem/1 var(--f-display); font-stretch: 125%; min-width: 3.5ch; color: var(--tape); }
+  .sa__res p { font-size: var(--t-sm); color: var(--graphite); }
+  @media (max-width: 560px) { .sa__form { grid-template-columns: 1fr 1fr; } .sa__form .btn { grid-column: 1 / -1; } }
+</style>
+<script is:inline define:vars={{ phone: company.phone, msg }}>
+  document.querySelectorAll('[data-sa]').forEach(function (root) {
+    if (root.dataset.ready) return; root.dataset.ready = '1';
+    var d = JSON.parse(root.dataset.sa), hIn = root.querySelector('input[name=h]'), wIn = root.querySelector('input[name=w]'), out = root.querySelector('[data-sa-out]');
+    function closest(v, list) { return list.reduce(function (a, b) { return Math.abs(b - v) < Math.abs(a - v) ? b : a; }); }
+    root.querySelectorAll('input').forEach(function (i) { i.addEventListener('focus', function () { i.select(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); go(); } }); });
+    root.querySelector('[data-sa-go]').addEventListener('click', go);
+    function go() {
+      var h = parseInt(hIn.value, 10), w = parseInt(wIn.value, 10);
+      if (!h || !w) { out.innerHTML = '<p class="sa__hint">' + msg.empty + '</p>'; return; }
+      if (h < 150 || h > 220 || w < 45 || w > 155) {
+        out.innerHTML = '<div class="sa__res"><p>' + msg.out + ' <span class="mono">' + phone + '</span></p></div>';
+        return;
+      }
+      var size = d.matrix[d.heights.indexOf(closest(h, d.heights))][d.weights.indexOf(closest(w, d.weights))];
+      var row = d.table.find(function (r) { return r.size === size; });
+      var note = d.available && d.available.indexOf(size) === -1 ? ' ' + msg.na : '';
+      out.innerHTML = '<div class="sa__res"><span class="sa__size">' + size + '</span><p>' + msg.forx.replace('{h}', h).replace('{w}', w) + (row ? ' ' + msg.range.replace('{s}', size).replace('{h}', row.height).replace('{c}', row.chest) : '') + note + '</p></div>';
+      document.dispatchEvent(new CustomEvent('gc:size', { detail: size }));
+    }
+  });
+</script>

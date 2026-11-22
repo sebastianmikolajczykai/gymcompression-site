@@ -1,0 +1,18 @@
+# Render Blueprint: strona statyczna do pokazania (bez paska prototypu, noindex do czasu przeniesienia domeny)
+# Render > New > Blueprint > wskaż repozytorium z tym plikiem.
+services:
+  - type: web
+    name: gymcompression-prototyp
+    runtime: static
+    buildCommand: npm ci && npm run build:draft
+    staticPublishPath: ./dist
+    headers:
+      - path: /*
+        name: X-Robots-Tag
+        value: noindex, nofollow
+      - path: /fonts/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /img/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable

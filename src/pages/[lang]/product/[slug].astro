@@ -1,0 +1,7 @@
+---
+import Page from '../../product/[slug].astro';
+import { products } from '../../../lib/shop';
+import { FOREIGN } from '../../../i18n';
+export const getStaticPaths = () => FOREIGN.flatMap((lang) => products.map((p) => ({ params: { lang, slug: p.slug }, props: { p } })));
+---
+<Page {...Astro.props} />

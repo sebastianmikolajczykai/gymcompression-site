@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import SizeAdvisor from '../components/SizeAdvisor.astro';
+import SizeTable from '../components/SizeTable.astro';
+import { heights, weights, matrix } from '../data/sizes';
+import { company } from '../data/catalog';
+import { breadcrumbLd } from '../lib/schema';
+import { langOf, t, lp } from '../i18n';
+const L = langOf(Astro.url.pathname);
+const crumbs = [{ name: t(L, 'Strona główna'), path: '' }, { name: t(L, 'Tabela rozmiarów'), path: 'tabela-rozmiarow' }];
+const shade: Record<string, string> = { M: '#dfe6fb', L: '#b6c6f6', XL: '#7d98ee', XXL: '#3f63e0', '3XL': '#1a2f8c' };
+---
+<Base title={t(L, 'Tabela rozmiarów odzieży kompresyjnej | Gym Compression')}
+  description={t(L, 'Tabela rozmiarów Gym Compression M–3XL: wzrost, obwód klatki piersiowej i waga w cm i kg. Kalkulator rozmiaru i siatka wzrost × waga.')}
+  path="tabela-rozmiarow" jsonld={[breadcrumbLd(crumbs.map((c) => ({ ...c, path: lp(L, c.path) })))]}>
+  <Breadcrumbs items={crumbs} />
+  <div class="wrap sg">
+    <header class="sg__head">
+      <h1>{t(L, 'Tabela rozmiarów')}</h1>
+      <p>{t(L, 'Odzież kompresyjna powinna przylegać do ciała na całej długości, bez uciskania w ruchu. Dobierz rozmiar według wzrostu, obwodu klatki piersiowej i wagi.')}</p>
+    </header>
+
+    <section class="sg__card" aria-labelledby="calc-h">
+      <h2 id="calc-h">{t(L, 'Kalkulator rozmiaru')}</h2>
+      <SizeAdvisor id="sg-sa" />
+    </section>
+
+    <section aria-labelledby="t-h" class="sg__block">
+      <h2 id="t-h">{t(L, 'Wymiary')}</h2>
+      <div class="sg__cols">
+        <SizeTable />
+        <figure class="measure" aria-label={t(L, 'Jak się zmierzyć')}>
+          <svg viewBox="0 0 120 220" role="img" aria-labelledby="m-title">
+            <title id="m-title">{t(L, 'Sylwetka z zaznaczonym wzrostem (A) i obwodem klatki piersiowej (B)')}</title>
+            <g fill="#2a3035">
+              <circle cx="60" cy="22" r="14"/>
+              <path d="M38 42h44c8 0 12 5 13 12l6 52c1 5-6 6-7 1l-7-44v48l3 100c0 5-8 5-9 0l-8-86h-6l-8 86c-1 5-9 5-9 0l3-100v-48l-7 44c-1 5-8 4-7-1l6-52c1-7 5-12 13-12z"/>
+            </g>
+            <line x1="22" y1="62" x2="98" y2="62" stroke="#1f45d6" stroke-width="2.5"/>
+            <text x="60" y="56" font-family="IBM Plex Mono, monospace" font-size="9" fill="#fff" text-anchor="middle">B</text>
+            <line x1="110" y1="8" x2="110" y2="212" stroke="#1f45d6" stroke-width="2"/>
+            <path d="M106 12l4-6 4 6M106 208l4 6 4-6" stroke="#1f45d6" stroke-width="2" fill="none"/>
+            <text x="104" y="114" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1f45d6" text-anchor="end">A</text>
+          </svg>
+          <figcaption>
+            <p><strong class="mono">A</strong> {t(L, 'Wzrost: stań boso przy ścianie, zmierz od podłogi do czubka głowy.')}</p>
+            <p><strong class="mono">B</strong> {t(L, 'Klatka: taśma poziomo w najszerszym miejscu klatki piersiowej, pod pachami.')}</p>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section aria-labelledby="g-h" class="sg__block">
+      <h2 id="g-h">{t(L, 'Siatka wzrost × waga')}</h2>
+      <p class="note">{t(L, 'Ta sama siatka, której używa kalkulator. Wiersze: wzrost w cm, kolumny: waga w kg.')}</p>
+      <div class="table-scroll">
+        <table class="grid-t">
+          <thead><tr><th scope="col"><span class="sr-only">{t(L, 'Wzrost / waga')}</span>cm \ kg</th>{weights.map((w) => <th scope="col">{w}</th>)}</tr></thead>
+          <tbody>{heights.map((h, r) => <tr><th scope="row">{h}</th>{matrix[r].map((s) => <td style={`background:${shade[s]};color:${['XXL', '3XL', 'XL'].includes(s) ? '#fff' : '#101315'}`}>{s}</td>)}</tr>)}</tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="note">{t(L, 'Masz wymiary między rozmiarami? Mniejszy rozmiar da mocniejszą kompresję, większy więcej swobody. W razie wątpliwości zadzwoń:')} <span class="mono">{company.phone}</span>.</p>
+  </div>
+</Base>
+<style>
+  .sg { display: grid; gap: var(--s-7); padding-bottom: var(--s-6); }
+  .sg__head { display: grid; gap: var(--s-4); max-width: 62ch; }
+  .sg__head p { font-size: var(--t-lg); color: var(--graphite); }
+  .sg__card { display: grid; gap: var(--s-4); padding: var(--s-5); background: var(--chalk); border-radius: 14px; max-width: 760px; }
+  .sg__block { display: grid; gap: var(--s-4); }
+  .sg__cols { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--s-7); align-items: start; }
+  .measure { margin: 0; display: grid; grid-template-columns: 7.5rem 1fr; gap: var(--s-4); align-items: center; }
+  .measure figcaption { display: grid; gap: var(--s-3); font-size: var(--t-sm); }
+  .grid-t { border-collapse: separate; border-spacing: 2px; font: 500 var(--t-xs)/1 var(--f-mono); font-variant-numeric: tabular-nums; }
+  .grid-t th { padding: .5rem; color: var(--muted); font-weight: 500; }
+  .grid-t td { padding: .55rem .4rem; text-align: center; min-width: 2.6rem; border-radius: 3px; }
+  .note { font-size: var(--t-sm); color: var(--muted); }
+  @media (max-width: 860px) { .sg__cols { grid-template-columns: 1fr; } }
+</style>

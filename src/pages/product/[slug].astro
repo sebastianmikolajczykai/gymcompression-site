@@ -1,0 +1,237 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import SizeAdvisor from '../../components/SizeAdvisor.astro';
+import SizeTable from '../../components/SizeTable.astro';
+import { products, type Product, primaryCollection, trail, href as hrefPl, pln as plnPl, kind, imgSrc, srcset, productPath, inCollection, line, pages } from '../../lib/shop';
+import { langOf, t, tf, plural, pname, lp } from '../../i18n';
+import { breadcrumbLd, productLd, faqLd } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug }, props: { p } }));
+}
+const { p: p0 } = Astro.props as { p: Product };
+const L = langOf(Astro.url.pathname);
+const href = (x: string) => hrefPl(x, L);
+const pln = (n: number) => plnPl(n, L);
+// Treść w wybranym języku (PL bez zmian)
+const p: Product = L === 'pl' ? p0 : { ...p0, name: pname(L, p0.name), short: t(L, p0.short), setItems: p0.setItems.map((x) => t(L, x)), spec: p0.spec.map((x) => t(L, x)), faq: p0.faq.map((f) => ({ q: t(L, f.q), a: t(L, f.a) })), stockText: t(L, p0.stockText), seoTitle: '', seoDesc: '' };
+const path = productPath(p);
+const col = primaryCollection(p);
+const crumbs = [{ name: t(L, 'Strona główna'), path: '' }, ...trail(col).map((c) => ({ name: t(L, c.name), path: c.path })), { name: p.name, path }];
+const ldCrumbs = crumbs.map((x) => ({ ...x, path: lp(L, x.path) }));
+const related = inCollection(col).filter((x) => x.id !== p.id && x.inStock).slice(0, 4);
+// EN/UA: nazwa produktu już zawiera markę, więc bez dopisku typu (krótszy tytuł)
+const rawTitle = p.seoTitle || (L !== 'pl' ? (p.name.includes('Gym Compression') ? p.name : `${p.name} | Gym Compression`) : `${p.name} | ${t(L, kind(p0))} | Gym Compression`);
+// Tytuł z AIOSEO bywa > 65 znaków przez podwójną markę: wtedy usuwamy końcówkę " | Gym Compression".
+const title = rawTitle.length > 65 && /Gym Compression.*\| Gym Compression$/.test(rawTitle) ? rawTitle.replace(/\s*\| Gym Compression$/, '') : rawTitle;
+const description = p.seoDesc || p.short || `${p.name}. ${tf(L, 'Rozmiary {a}–{b}.', { a: p.sizes[0], b: p.sizes.at(-1)! })}`;
+const jsonld: object[] = [breadcrumbLd(ldCrumbs), productLd(p, lp(L, path))];
+if (p.faq.length) jsonld.push(faqLd(p.faq));
+const shipping = L === 'pl' ? pages['wysylka-i-dostawa'] : undefined;
+const returns = L === 'pl' ? pages['refund_returns'] : undefined;
+const ogImage = p.images[0]?.original;
+---
+<Base title={title} description={description} path={path} jsonld={jsonld} ogType="product" image={ogImage}>
+  <Breadcrumbs items={crumbs} />
+  <div class="wrap pdp">
+    <section class="gallery" aria-label={t(L, 'Zdjęcia produktu')}>
+      <div class="gallery__track" data-track tabindex="0">
+        {p.images.map((im, i) => (
+          <figure class="gallery__slide" id={`img-${i}`}>
+            <img src={imgSrc(im.base, 960)} srcset={srcset(im.base)} sizes="(max-width: 900px) 100vw, 58vw" width={im.w} height={im.h} alt={L === 'pl' ? (im.alt || p0.name) : pname(L, p0.name)} loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} decoding="async" />
+          </figure>
+        ))}
+      </div>
+      {p.images.length > 1 && (
+        <div class="gallery__thumbs">
+          {p.images.map((im, i) => <a href={`#img-${i}`} data-thumb={i} aria-label={tf(L, 'Zdjęcie {i} z {n}', { i: i + 1, n: p.images.length })}><img src={imgSrc(im.base, 480)} width="96" height="120" alt="" loading="lazy" decoding="async" /></a>)}
+        </div>
+      )}
+    </section>
+
+    <section class="buy" aria-label={t(L, 'Zakup')}>
+      <div class="buy__in">
+        <p class="eyebrow">{t(L, kind(p0))} · {line(p0)}</p>
+        <h1>{p.name}</h1>
+        <p class="buy__price"><span class="price">{pln(p.price)}</span>{p.onSale && p.regularPrice > p.price && <s class="mono">{pln(p.regularPrice)}</s>}</p>
+        {p.short && <p class="buy__short">{p.short}</p>}
+
+        {p.setItems.length > 0 && (
+          <div class="kit">
+            <p class="eyebrow">{t(L, 'W zestawie')} {p.setItems.length} {plural(L, p.setItems.length, ['element', 'elementy', 'elementów'])}</p>
+            <ol>{p.setItems.map((it) => <li>{it}</li>)}</ol>
+          </div>
+        )}
+
+        <form class="buy__form" data-buy data-id={p.id} data-name={p.name} data-price={p.price} data-img={imgSrc(p.images[0].base, 480)} data-url={href(path)}>
+          <fieldset class="sizes">
+            <legend><span class="eyebrow">{t(L, 'Rozmiar')}</span> <button type="button" class="linkbtn" data-open-sa>{t(L, 'Nie znasz rozmiaru?')}</button></legend>
+            <div class="sizes__grid">
+              {p.sizes.map((s) => <label class="size"><input type="radio" name="size" value={s} required /><span>{s}</span></label>)}
+            </div>
+          </fieldset>
+          <div class="sa-box" data-sa-box hidden>
+            <SizeAdvisor id={`pdp-${p.id}`} available={p.sizes} />
+          </div>
+          <p class="buy__err" data-err hidden>{t(L, 'Wybierz rozmiar.')}</p>
+          <button class="btn btn--block" type="submit" disabled={!p.inStock}>{p.inStock ? t(L, 'Dodaj do koszyka') : t(L, 'Chwilowo niedostępny')}</button>
+          <p class="buy__ok" data-ok hidden role="status">{t(L, 'Dodano do koszyka.')} <a href={href('koszyk')}>{t(L, 'Przejdź do koszyka')}</a></p>
+          <ul class="buy__facts">
+            <li><span class="dot" style={p.inStock ? '' : 'background:var(--warn)'}></span>{p.inStock ? (p.stockText || t(L, 'Dostępny')) : t(L, 'Brak w magazynie')}</li>
+            <li>{t(L, 'Płatności online Przelewy24')}</li>
+            <li>{t(L, 'Wysyłka i zwroty:')} <a href="#dostawa">{t(L, 'szczegóły')}</a></li>
+          </ul>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap details">
+    {L !== 'pl' ? (
+      <details open><summary><h2>{t(L, 'Opis')}</h2></summary><div class="prose">{p.short && <p>{p.short}</p>}<p class="note">{t(L, 'Pełny opis produktu jest na razie dostępny po polsku.')} <a href={hrefPl(path, 'pl')} hreflang="pl">{t(L, 'Zobacz opis po polsku')}</a></p></div></details>
+    ) : p.descHtml ? (
+      <details open><summary><h2>{t(L, 'Opis')}</h2></summary><div class="prose" set:html={p.descHtml} /></details>
+    ) : (
+      <details open><summary><h2>{t(L, 'Opis')}</h2></summary><div class="prose"><p class="todo">Opis produktu zostanie pobrany z obecnego sklepu.</p></div></details>
+    )}
+    {p.spec.length > 0 && (
+      <details><summary><h2>{t(L, 'Specyfikacja')}</h2></summary><ul class="spec">{p.spec.map((s) => { const [k, ...v] = s.split(':'); return v.length ? <li><span class="eyebrow">{k}</span><span>{v.join(':').trim()}</span></li> : <li class="spec__plain">{s}</li>; })}</ul></details>
+    )}
+    <details><summary><h2>{t(L, 'Tabela rozmiarów')}</h2></summary>
+      <div class="details__body"><SizeTable /><p class="note">{t(L, 'A: wzrost, B: obwód klatki piersiowej. W razie wątpliwości skontaktuj się z nami, pomożemy dobrać rozmiar.')} <a href={href('tabela-rozmiarow')}>{t(L, 'Jak się zmierzyć')}</a></p></div>
+    </details>
+    {p.faq.length > 0 && (
+      <details><summary><h2>{t(L, 'Najczęstsze pytania')}</h2></summary><dl class="faq">{p.faq.map((f) => <><dt>{f.q}</dt><dd>{f.a}</dd></>)}</dl></details>
+    )}
+    <details id="dostawa"><summary><h2>{t(L, 'Dostawa i zwroty')}</h2></summary>
+      <div class="prose">
+        {L !== 'pl' ? <p>{t(L, 'Wysyłka na terenie Polski. Pełne warunki dostawy i zwrotów są dostępne po polsku:')} <a href="https://gymcompression.pl/wysylka-i-dostawa/" hreflang="pl" rel="noopener">{t(L, 'Wysyłka i dostawa')}</a>, <a href="https://gymcompression.pl/refund_returns/" hreflang="pl" rel="noopener">{t(L, 'Zwroty i reklamacje')}</a>.</p> : shipping?.html ? <Fragment set:html={shipping.html} /> : <p class="todo">Warunki dostawy zostaną przeniesione ze strony „Wysyłka i dostawa”.</p>}
+        {returns?.html && <Fragment set:html={returns.html} />}
+      </div>
+    </details>
+  </div>
+
+  {related.length > 0 && (
+    <section class="section" aria-labelledby="rel-h">
+      <div class="wrap">
+        <div class="section__head"><h2 id="rel-h">{t(L, 'Może Ci się spodobać')}</h2><a class="link-arrow" href={href(col.path)}>{t(L, col.name)}</a></div>
+        <div class="grid">{related.map((r) => <ProductCard p={r} />)}</div>
+      </div>
+    </section>
+  )}
+
+  <div class="sticky-buy" data-sticky hidden>
+    <span class="sticky-buy__name">{p.name}</span>
+    <span class="price">{pln(p.price)}</span>
+    <a class="btn" href="#main" data-to-buy>{t(L, 'Wybierz rozmiar')}</a>
+  </div>
+</Base>
+
+<style>
+  .pdp { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: var(--s-7); align-items: start; }
+  .gallery { display: grid; gap: var(--s-3); min-width: 0; }
+  .gallery__track { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .gallery__slide { margin: 0; background: var(--chalk); aspect-ratio: 4 / 5; overflow: hidden; border-radius: 4px; }
+  .gallery__slide:first-child { grid-column: 1 / -1; aspect-ratio: 1 / 1; }
+  .gallery__slide img { width: 100%; height: 100%; object-fit: cover; }
+  .gallery__thumbs { display: none; }
+  .buy { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 5rem); }
+  .buy__in { display: grid; gap: var(--s-4); }
+  .buy h1 { font-size: var(--t-xl); font-stretch: 110%; text-transform: none; line-height: 1.1; }
+  .buy__price { display: flex; gap: var(--s-3); align-items: baseline; }
+  .buy__price .price { font-size: 1.5rem; }
+  .buy__price s { color: var(--muted); }
+  .buy__short { color: var(--graphite); }
+  .kit { padding: var(--s-4); background: var(--chalk); border-radius: 10px; display: grid; gap: var(--s-2); }
+  .kit ol { margin: 0; padding-left: 1.4em; display: grid; gap: .2rem; font-size: var(--t-sm); }
+  .kit li::marker { font-family: var(--f-mono); color: var(--tape); }
+  .buy__form { display: grid; gap: var(--s-4); }
+  .sizes { border: 0; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  .sizes legend { display: flex; width: 100%; justify-content: space-between; align-items: baseline; padding: 0; margin-bottom: var(--s-3); }
+  .sizes__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(4.2rem, 1fr)); gap: 6px; }
+  .size { position: relative; }
+  .size input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .size span { display: grid; place-items: center; height: 3.1rem; border: 1px solid var(--line); border-radius: 8px; font: 600 var(--t-md)/1 var(--f-mono); transition: border-color .12s; }
+  .size:hover span { border-color: var(--ink); }
+  .size input:checked + span { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .size input:focus-visible + span { outline: 2px solid var(--tape); outline-offset: 2px; }
+  .size.flash span { box-shadow: 0 0 0 3px var(--tape); }
+  .linkbtn { background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: 3px; font-size: var(--t-sm); color: var(--ink); }
+  .sa-box { padding: var(--s-4); border: 1px solid var(--line); border-radius: 12px; background: var(--chalk); }
+  .buy__err { color: #b3261e; font-size: var(--t-sm); }
+  .buy__ok { font-size: var(--t-sm); color: var(--ok); }
+  .buy__facts { list-style: none; margin: 0; padding: var(--s-4) 0 0; border-top: 1px solid var(--line); display: grid; gap: .45rem; font-size: var(--t-sm); color: var(--graphite); }
+  .buy__facts li { display: flex; gap: .6rem; align-items: center; }
+  .buy__facts li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+  .buy__facts li:first-child::before { display: none; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+
+  .details { margin-top: var(--s-8); max-width: 920px; }
+  .details details { border-top: 1px solid var(--line); }
+  .details details:last-child { border-bottom: 1px solid var(--line); }
+  .details summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: var(--s-5) 0; }
+  .details summary::-webkit-details-marker { display: none; }
+  .details summary h2 { font-size: var(--t-lg); }
+  .details summary::after { content: "+"; font: 400 1.6rem/1 var(--f-mono); }
+  .details details[open] summary::after { content: "–"; }
+  .details details > :not(summary) { padding-bottom: var(--s-6); }
+  .details__body { display: grid; gap: var(--s-4); }
+  .note, .todo { font-size: var(--t-sm); color: var(--muted); }
+  .spec { list-style: none; margin: 0; padding: 0; display: grid; }
+  .spec li { display: grid; grid-template-columns: 12rem 1fr; gap: var(--s-4); padding: .7rem 0; border-bottom: 1px solid var(--line); }
+  .spec__plain { grid-template-columns: 1fr !important; }
+  .faq { margin: 0; display: grid; gap: var(--s-4); }
+  .faq dt { font-weight: 600; }
+  .faq dd { margin: .25rem 0 0; color: var(--graphite); }
+
+  .sticky-buy { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; gap: var(--s-3); padding: .6rem var(--gutter-r) calc(.6rem + env(safe-area-inset-bottom, 0px)) var(--gutter-l); background: var(--paper); border-top: 1px solid var(--line); box-shadow: 0 -10px 30px -20px rgb(16 19 21 / .4); }
+  .sticky-buy__name { flex: 1; min-width: 0; font-weight: 600; font-size: var(--t-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sticky-buy .btn { min-height: 2.75rem; padding: 0 1.1rem; }
+
+  @media (max-width: 900px) {
+    .pdp { grid-template-columns: 1fr; gap: var(--s-5); }
+    .buy { position: static; }
+    .gallery { margin-inline: calc(-1 * var(--gutter-l)) calc(-1 * var(--gutter-r)); }
+    .gallery__track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 0; scrollbar-width: none; }
+    .gallery__track::-webkit-scrollbar { display: none; }
+    .gallery__slide, .gallery__slide:first-child { flex: 0 0 100%; scroll-snap-align: start; aspect-ratio: 4 / 5; border-radius: 0; }
+    .gallery__thumbs { display: flex; gap: 6px; overflow-x: auto; padding-inline: var(--gutter-l) var(--gutter-r); }
+    .gallery__thumbs a { flex: 0 0 3.5rem; border-radius: 4px; overflow: hidden; background: var(--chalk); border: 1px solid transparent; }
+    .gallery__thumbs a.on { border-color: var(--ink); }
+    .spec li { grid-template-columns: 1fr; gap: .2rem; }
+  }
+  @media (min-width: 901px) { .sticky-buy { display: none !important; } }
+</style>
+<script is:inline>
+  (function () {
+    var form = document.querySelector('[data-buy]'); if (!form) return;
+    var err = form.querySelector('[data-err]'), ok = form.querySelector('[data-ok]'), box = form.querySelector('[data-sa-box]');
+    form.querySelector('[data-open-sa]').addEventListener('click', function () { box.hidden = !box.hidden; if (!box.hidden) box.querySelector('input').focus(); });
+    document.addEventListener('gc:size', function (e) {
+      var r = form.querySelector('input[name=size][value="' + e.detail + '"]');
+      if (r) { r.checked = true; var l = r.closest('.size'); l.classList.add('flash'); setTimeout(function () { l.classList.remove('flash'); }, 1200); }
+    });
+    form.addEventListener('change', function () { err.hidden = true; });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var s = form.querySelector('input[name=size]:checked');
+      if (!s) { err.hidden = false; form.querySelector('.sizes').scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+      window.gcCart && window.gcCart.add({ id: Number(form.dataset.id), name: form.dataset.name, price: Number(form.dataset.price), img: new URL(form.dataset.img, document.baseURI).href, url: new URL(form.dataset.url, document.baseURI).href, size: s.value });
+      ok.hidden = false;
+    });
+    // Galeria mobilna: aktywna miniatura
+    var track = document.querySelector('[data-track]'), thumbs = document.querySelectorAll('[data-thumb]');
+    if (track && thumbs.length) {
+      track.addEventListener('scroll', function () { var i = Math.round(track.scrollLeft / track.clientWidth); thumbs.forEach(function (t, k) { t.classList.toggle('on', k === i); }); }, { passive: true });
+      thumbs.forEach(function (t) { t.addEventListener('click', function (e) { if (getComputedStyle(track).display === 'flex') { e.preventDefault(); track.scrollTo({ left: track.clientWidth * Number(t.dataset.thumb), behavior: 'smooth' }); } }); });
+    }
+    // Pasek "kup" na telefonie, gdy formularz zniknie z ekranu
+    var sticky = document.querySelector('[data-sticky]');
+    if (sticky && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (en) { sticky.hidden = en[0].isIntersecting || en[0].boundingClientRect.top > 0; }).observe(form);
+      sticky.querySelector('[data-to-buy]').addEventListener('click', function (e) { e.preventDefault(); form.scrollIntoView({ block: 'center', behavior: 'smooth' }); });
+    }
+  })();
+</script>

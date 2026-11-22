@@ -1,0 +1,22 @@
+---
+import { type Product, href, productPath, pln, kind, imgSrc, srcset } from '../lib/shop';
+import { langOf, t, pname } from '../i18n';
+const L = langOf(Astro.url.pathname);
+interface Props { p: Product; eager?: boolean; sizes?: string }
+const { p, eager = false, sizes = '(max-width: 760px) 50vw, (max-width: 1100px) 33vw, 25vw' } = Astro.props;
+const img = p.images[0];
+---
+<article class="card">
+  {!p.inStock && <span class="badge badge--out">{t(L, 'Brak w magazynie')}</span>}
+  <div class="card__img">
+    <img src={imgSrc(img.base, 960)} srcset={srcset(img.base)} sizes={sizes} width={img.w} height={img.h} alt={L === 'pl' ? (img.alt || p.name) : pname(L, p.name)} loading={eager ? 'eager' : 'lazy'} decoding="async" fetchpriority={eager ? 'high' : undefined} />
+  </div>
+  <div class="card__body">
+    <span class="card__kind">{t(L, kind(p))}</span>
+    <h3 class="card__name" style="font:600 1rem/1.3 var(--f-body)"><a href={href(productPath(p), L)}>{pname(L, p.name)}</a></h3>
+    <div class="card__meta">
+      <span class="price">{pln(p.price, L)}</span>
+      <span class="card__sizes">{p.sizes[0]}–{p.sizes.at(-1)}</span>
+    </div>
+  </div>
+</article>

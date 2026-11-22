@@ -1,0 +1,7 @@
+---
+import Page from '../[...col].astro';
+import { collections } from '../../data/catalog';
+import { FOREIGN } from '../../i18n';
+export const getStaticPaths = () => FOREIGN.flatMap((lang) => collections.map((c) => ({ params: { lang, col: c.path }, props: { c } })));
+---
+<Page {...Astro.props} />

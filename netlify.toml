@@ -1,0 +1,12 @@
+# Netlify: wersja robocza (noindex). Build z repozytorium albo przeciągnięcie gotowego folderu dist w Netlify Drop.
+[build]
+  command = "npm run build:draft"
+  publish = "dist"
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+[[headers]]
+  for = "/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

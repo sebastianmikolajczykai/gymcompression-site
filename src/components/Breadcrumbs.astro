@@ -1,0 +1,14 @@
+---
+import { href } from '../lib/shop';
+import { langOf, t } from '../i18n';
+const L = langOf(Astro.url.pathname);
+// items: [{ name, path }], ostatni element = bieżąca strona (bez linku)
+const { items } = Astro.props as { items: { name: string; path: string }[] };
+---
+<nav class="crumbs wrap" aria-label={t(L, 'Okruszki')}>
+  <ol>
+    {items.map((it, i) => (
+      <li>{i < items.length - 1 ? <a href={href(it.path, L)}>{it.name}</a> : <span aria-current="page">{it.name}</span>}</li>
+    ))}
+  </ol>
+</nav>

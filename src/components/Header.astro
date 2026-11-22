@@ -1,0 +1,60 @@
+---
+import { mainNav, byPath } from '../data/catalog';
+import { href as hrefPl, inCollection } from '../lib/shop';
+import { langOf, t, LANGS, LANG_LABEL, LANG_NAME } from '../i18n';
+const { active, path = '' } = Astro.props as { active?: string; path?: string };
+const L = langOf(Astro.url.pathname);
+const href = (p: string) => hrefPl(p, L);
+const count = (p: string) => inCollection(byPath(p)!).length;
+---
+<header class="hdr">
+  <div class="wrap hdr__in">
+    <a class="logo" href={href('')} aria-label={`Gym Compression – ${t(L, 'strona główna')}`}><b>Gym</b> <span>Compression</span></a>
+    <nav class="nav" aria-label={t(L, 'Główne kategorie')}>
+      {mainNav.map((n) => (
+        <div>
+          <a class="top" href={href(n.path)} aria-current={active === n.path ? 'page' : undefined}>{t(L, n.label)}</a>
+          {n.children && (
+            <div class="sub">
+              {n.children.map((c) => { const col = byPath(c)!; return <a href={href(c)}>{t(L, col.name)}<small>{count(c)}</small></a>; })}
+              <a href={href(n.path)}><strong>{t(L, 'Wszystkie')}</strong><small>{count(n.path)}</small></a>
+            </div>
+          )}
+        </div>
+      ))}
+    </nav>
+    <div class="tools">
+      <nav class="lang" aria-label={t(L, 'Język')}>{LANGS.map((l) => <a href={hrefPl(path === '404' ? '' : path, l)} hreflang={l} lang={l} aria-current={l === L ? 'true' : undefined} title={LANG_NAME[l]}>{LANG_LABEL[l]}</a>)}</nav>
+      <a class="icon-btn" href={href('tabela-rozmiarow')} aria-label={t(L, 'Tabela rozmiarów')} title={t(L, 'Tabela rozmiarów')}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 8h18v8H3z"/><path d="M7 8v3M11 8v4M15 8v3M19 8v4"/></svg>
+      </a>
+      <a class="icon-btn" href={href('koszyk')} aria-label={t(L, 'Koszyk')}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="cart-count" data-cart-count></span>
+      </a>
+      <button class="icon-btn menu-btn" type="button" aria-label={t(L, 'Menu')} aria-expanded="false" data-menu-open>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="drawer" data-drawer hidden>
+  <div class="drawer__panel" role="dialog" aria-label={t(L, 'Menu')}>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <a class="logo" href={href('')}><b>Gym</b><span>Compression</span></a>
+      <button class="icon-btn" type="button" aria-label={t(L, 'Zamknij menu')} data-menu-close>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <nav aria-label={t(L, 'Menu mobilne')}>
+      {mainNav.map((n) => (
+        <>
+          <a href={href(n.path)}>{t(L, n.label)}</a>
+          {n.children?.map((c) => <a class="child" href={href(c)}>{t(L, byPath(c)!.name)}</a>)}
+        </>
+      ))}
+      <a href={href('tabela-rozmiarow')}>{t(L, 'Tabela rozmiarów')}</a>
+    </nav>
+    <nav class="lang lang--drawer" aria-label={t(L, 'Język')}>{LANGS.map((l) => <a href={hrefPl(path === '404' ? '' : path, l)} hreflang={l} lang={l} aria-current={l === L ? 'true' : undefined} title={LANG_NAME[l]}>{LANG_LABEL[l]}</a>)}</nav>
+  </div>
+</div>

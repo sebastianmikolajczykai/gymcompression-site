@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import { href as hrefPl, pln, isShowcase } from '../lib/shop';
+import { langOf, t, NUM_LOCALE } from '../i18n';
+const L = langOf(Astro.url.pathname);
+const href = (p: string) => hrefPl(p, L);
+const cm = { size: t(L, 'Rozmiar'), less: t(L, 'Mniej'), more: t(L, 'Więcej'), loc: NUM_LOCALE[L] };
+---
+<Base title={`${t(L, 'Koszyk')} | Gym Compression`} description={t(L, 'Twój koszyk w sklepie Gym Compression.')} path="koszyk" noindex>
+  <div class="wrap cart">
+    <h1>{t(L, 'Koszyk')}</h1>
+    <div class="cart__grid">
+      <div data-cart-list><p class="muted">{t(L, 'Koszyk jest pusty.')} <a href={href('zestawy-kompresyjne')}>{t(L, 'Zobacz zestawy')}</a></p></div>
+      <aside class="sum" aria-label={t(L, 'Podsumowanie')}>
+        <h2>{t(L, 'Podsumowanie')}</h2>
+        <dl><div><dt>{t(L, 'Produkty')}</dt><dd class="price" data-sum>{pln(0, L)}</dd></div><div><dt>{t(L, 'Dostawa')}</dt><dd class="muted">{t(L, 'wyliczana w kolejnym kroku')}</dd></div></dl>
+        <button class="btn btn--block" type="button" data-checkout>{t(L, 'Przejdź do kasy')}</button>
+        <p class="muted small" data-note hidden role="status">{isShowcase ? <>{t(L, 'Płatności online na tej stronie uruchomimy wkrótce. Do tego czasu zamówienie złożysz w obecnym sklepie:')}{' '}<a href="https://gymcompression.pl/shop/">gymcompression.pl</a></> : t(L, 'To prototyp: zamówienie nie zostanie złożone. W wersji produkcyjnej ten przycisk prowadzi do kasy WooCommerce z płatnością Przelewy24.')}</p>
+      </aside>
+    </div>
+  </div>
+</Base>
+<style>
+  .cart { display: grid; gap: var(--s-6); padding-block: var(--s-6); }
+  .cart__grid { display: grid; grid-template-columns: minmax(0, 1fr) 22rem; gap: var(--s-7); align-items: start; }
+  .muted { color: var(--muted); } .small { font-size: var(--t-sm); }
+  .sum { display: grid; gap: var(--s-4); padding: var(--s-5); background: var(--chalk); border-radius: 12px; }
+  .sum h2 { font-size: var(--t-lg); }
+  .sum dl { margin: 0; display: grid; gap: var(--s-3); }
+  .sum dl div { display: flex; justify-content: space-between; gap: var(--s-3); }
+  .sum dd { margin: 0; text-align: right; }
+  :global(.line) { display: grid; grid-template-columns: 5.5rem 1fr auto; gap: var(--s-4); align-items: center; padding-block: var(--s-4); border-bottom: 1px solid var(--line); }
+  :global(.line img) { width: 5.5rem; aspect-ratio: 4/5; object-fit: cover; border-radius: 4px; background: var(--chalk); }
+  :global(.line .qty) { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; }
+  :global(.line .qty button) { width: 2.4rem; height: 2.4rem; border: 0; background: none; font-size: 1.1rem; }
+  :global(.line .qty span) { min-width: 1.6rem; text-align: center; font-family: var(--f-mono); }
+  @media (max-width: 860px) { .cart__grid { grid-template-columns: 1fr; } }
+</style>
+<script is:inline define:vars={{ cm }}>
+  (function () {
+    var list = document.querySelector('[data-cart-list]'), sum = document.querySelector('[data-sum]');
+    var fmt = new Intl.NumberFormat(cm.loc, { style: 'currency', currency: 'PLN' });
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function render(c) {
+      if (!c.length) return;
+      list.innerHTML = c.map(function (i) {
+        return '<div class="line"><img src="' + esc(i.img) + '" alt=""><div><a href="' + esc(i.url) + '"><strong>' + esc(i.name) + '</strong></a><div class="mono" style="color:var(--muted);font-size:.85rem">' + cm.size + ' ' + esc(i.size) + ' · ' + fmt.format(i.price) + '</div></div>' +
+          '<div class="qty"><button type="button" aria-label="' + cm.less + '" data-q="-1" data-id="' + i.id + '" data-s="' + esc(i.size) + '">−</button><span>' + i.qty + '</span><button type="button" aria-label="' + cm.more + '" data-q="1" data-id="' + i.id + '" data-s="' + esc(i.size) + '">+</button></div></div>';
+      }).join('');
+      sum.textContent = fmt.format(c.reduce(function (s, i) { return s + i.price * i.qty; }, 0));
+    }
+    function boot() {
+      if (!window.gcCart) return;
+      render(window.gcCart.read());
+      list.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-q]'); if (!b) return;
+        var c = window.gcCart.read(), it = c.find(function (i) { return i.id == b.dataset.id && i.size === b.dataset.s; });
+        if (it) window.gcCart.set(it.id, it.size, it.qty + Number(b.dataset.q));
+        var now = window.gcCart.read(); if (!now.length) location.reload(); else render(now);
+      });
+      document.querySelector('[data-checkout]').addEventListener('click', function () { document.querySelector('[data-note]').hidden = false; });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  })();
+</script>

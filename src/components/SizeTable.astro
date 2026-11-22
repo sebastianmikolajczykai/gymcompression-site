@@ -1,0 +1,15 @@
+---
+import { sizeTable } from '../data/sizes';
+import { langOf, t } from '../i18n';
+const L = langOf(Astro.url.pathname);
+const { caption = t(L, 'Tabela rozmiarów Gym Compression (męskie)') } = Astro.props as { caption?: string };
+---
+<div class="table-scroll">
+  <table class="size-table">
+    <caption class="sr-only">{caption}</caption>
+    <thead><tr><th scope="col">{t(L, 'Rozmiar')}</th><th scope="col">A · {t(L, 'Wzrost (cm)')}</th><th scope="col">B · {t(L, 'Klatka (cm)')}</th><th scope="col">{t(L, 'Waga (kg)')}</th></tr></thead>
+    <tbody>
+      {sizeTable.map((r) => <tr><th scope="row">{r.size}</th><td>{r.height}</td><td>{r.chest}</td><td>{r.weight}</td></tr>)}
+    </tbody>
+  </table>
+</div>

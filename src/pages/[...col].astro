@@ -1,0 +1,115 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { collections, type Collection } from '../data/catalog';
+import { inCollection, catBySlug, trail, href as hrefPl, abs, productPath } from '../lib/shop';
+import { langOf, t, tf, pname, lp } from '../i18n';
+import { breadcrumbLd, itemListLd } from '../lib/schema';
+
+export function getStaticPaths() {
+  return collections.map((c) => ({ params: { col: c.path }, props: { c } }));
+}
+const { c } = Astro.props as { c: Collection };
+const L = langOf(Astro.url.pathname);
+const href = (p: string) => hrefPl(p, L);
+const items = inCollection(c);
+const children = collections.filter((x) => x.parent === c.path);
+const siblings = c.parent ? collections.filter((x) => x.parent === c.parent) : [];
+const parent = c.parent ? collections.find((x) => x.path === c.parent) : undefined;
+// Opis kategorii i meta z obecnego sklepu (pierwsza pasująca kategoria WooCommerce)
+const woo = L === 'pl' ? c.woo.map(catBySlug).find(Boolean) : undefined;
+const crumbs = [{ name: t(L, 'Strona główna'), path: '' }, ...trail(c).map((x) => ({ name: t(L, x.name), path: x.path }))];
+const ldCrumbs = crumbs.map((x) => ({ ...x, path: lp(L, x.path) }));
+const sizes = [...new Set(items.flatMap((p) => p.sizes))].sort((a, b) => ['S', 'M', 'L', 'XL', 'XXL', '3XL'].indexOf(a) - ['S', 'M', 'L', 'XL', 'XXL', '3XL'].indexOf(b));
+const title = woo?.seoTitle || `${t(L, c.h1)} | Gym Compression`;
+const description = woo?.seoDesc || `${t(L, c.intro)} ${tf(L, '{n} produktów w rozmiarach {a}–{b}.', { n: items.length, a: sizes[0], b: sizes.at(-1)! })}`;
+const chips = children.length ? children : siblings;
+---
+<Base title={title} description={description} path={c.path} noindex={c.noindex} activeNav={trail(c)[0]?.path === 'odziez-kompresyjna-meska' ? trail(c)[1]?.path : c.path}
+  jsonld={[breadcrumbLd(ldCrumbs), itemListLd(items.map((p) => ({ url: abs(lp(L, productPath(p))), name: pname(L, p.name) })))]}>
+  <Breadcrumbs items={crumbs} />
+  <header class="wrap plp-head">
+    <h1>{t(L, c.h1)}</h1>
+    <p class="plp-lead">{t(L, c.intro)}</p>
+    {chips.length > 0 && (
+      <nav class="chips" aria-label={t(L, 'Podkategorie')}>
+        {parent && siblings.length > 0 && <a class="chip" href={href(parent.path)}>{t(L, 'Wszystkie')}</a>}
+        {chips.map((x) => <a class="chip" href={href(x.path)} aria-current={x.path === c.path ? 'page' : undefined}>{t(L, x.name)} <span class="mono">{inCollection(x).length}</span></a>)}
+      </nav>
+    )}
+  </header>
+
+  <div class="wrap plp" data-plp>
+    <div class="toolbar">
+      <p class="mono count" aria-live="polite">{t(L, 'Produkty')}: <span data-count>{items.length}</span></p>
+      <div class="filters">
+        <fieldset class="sizes-f">
+          <legend class="sr-only">{t(L, 'Rozmiar')}</legend>
+          {sizes.map((s) => <label class="sz"><input type="checkbox" value={s} data-size /> <span>{s}</span></label>)}
+        </fieldset>
+        <label class="sort"><span class="sr-only">{t(L, 'Sortuj')}</span>
+          <select data-sort>
+            <option value="new">{t(L, 'Najnowsze')}</option>
+            <option value="asc">{t(L, 'Cena: od najniższej')}</option>
+            <option value="desc">{t(L, 'Cena: od najwyższej')}</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <h2 class="sr-only">{t(L, 'Produkty w kategorii')}</h2>
+    <div class="grid" data-grid>
+      {items.map((p, i) => <div data-item data-price={p.price} data-id={p.id} data-sizes={p.sizes.join(' ')}><ProductCard p={p} eager={i < 4} /></div>)}
+    </div>
+    <p class="empty" data-empty hidden>{t(L, 'Brak produktów w wybranym rozmiarze.')} <button type="button" class="linkbtn" data-reset>{t(L, 'Wyczyść filtr')}</button></p>
+  </div>
+
+  {woo?.descHtml && (
+    <section class="section section--chalk seo-copy" aria-label={`O kategorii ${c.name}`} style="margin-top:var(--s-8)">
+      <div class="wrap"><div class="prose" set:html={woo.descHtml} /></div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .plp-head { display: grid; gap: var(--s-4); padding-bottom: var(--s-5); }
+  .plp-lead { color: var(--graphite); max-width: 60ch; font-size: var(--t-lg); }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .chip { display: inline-flex; gap: .45rem; align-items: center; padding: .55rem 1rem; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; font-weight: 600; font-size: var(--t-sm); }
+  .chip .mono { color: var(--muted); font-weight: 400; }
+  .chip:hover { border-color: var(--ink); color: var(--ink); }
+  .chip[aria-current] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .chip[aria-current] .mono { color: #b8bec2; }
+  .toolbar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 4rem); z-index: 5; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--s-3); padding-block: var(--s-3); margin-bottom: var(--s-5); background: var(--paper); border-bottom: 1px solid var(--line); }
+  .count { color: var(--muted); font-size: var(--t-sm); }
+  .filters { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
+  .sizes-f { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+  .sz { position: relative; }
+  .sz input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .sz span { display: inline-grid; place-items: center; min-width: 2.75rem; height: 2.5rem; padding: 0 .6rem; border: 1px solid var(--line); border-radius: 8px; font: 500 var(--t-sm)/1 var(--f-mono); }
+  .sz input:checked + span { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .sz input:focus-visible + span { outline: 2px solid var(--tape); outline-offset: 2px; }
+  .sort select { height: 2.5rem; border: 1px solid var(--line); border-radius: 8px; padding: 0 .8rem; background: var(--paper); font: inherit; font-size: var(--t-sm); color: var(--ink); }
+  .empty { padding: var(--s-7) 0; text-align: center; color: var(--muted); }
+  .linkbtn { background: none; border: 0; padding: 0; text-decoration: underline; color: var(--ink); }
+  [data-item][hidden] { display: none; }
+</style>
+<script is:inline>
+  (function () {
+    var root = document.querySelector('[data-plp]'); if (!root) return;
+    var grid = root.querySelector('[data-grid]'), items = Array.prototype.slice.call(root.querySelectorAll('[data-item]'));
+    var sort = root.querySelector('[data-sort]'), boxes = root.querySelectorAll('[data-size]');
+    function apply() {
+      var want = Array.prototype.filter.call(boxes, function (b) { return b.checked; }).map(function (b) { return b.value; });
+      var n = 0;
+      items.forEach(function (el) { var s = el.dataset.sizes.split(' '); var ok = !want.length || want.some(function (w) { return s.indexOf(w) > -1; }); el.hidden = !ok; if (ok) n++; });
+      var v = sort.value;
+      items.slice().sort(function (a, b) { return v === 'asc' ? a.dataset.price - b.dataset.price : v === 'desc' ? b.dataset.price - a.dataset.price : b.dataset.id - a.dataset.id; }).forEach(function (el) { grid.appendChild(el); });
+      root.querySelector('[data-count]').textContent = n;
+      root.querySelector('[data-empty]').hidden = n > 0;
+    }
+    sort.addEventListener('change', apply);
+    boxes.forEach(function (b) { b.addEventListener('change', apply); });
+    root.querySelector('[data-reset]').addEventListener('click', function () { boxes.forEach(function (b) { b.checked = false; }); apply(); });
+  })();
+</script>

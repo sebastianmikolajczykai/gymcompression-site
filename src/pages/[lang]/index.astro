@@ -1,0 +1,7 @@
+---
+// Wersje językowe (/en/, /uk/) używają tych samych szablonów co PL; język wynika z adresu.
+import Page from '../index.astro';
+import { FOREIGN } from '../../i18n';
+export const getStaticPaths = () => FOREIGN.map((lang) => ({ params: { lang } }));
+---
+<Page />

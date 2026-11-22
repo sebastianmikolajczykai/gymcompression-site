@@ -1,0 +1,210 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import SizeAdvisor from '../components/SizeAdvisor.astro';
+import SizeTable from '../components/SizeTable.astro';
+import { byPath } from '../data/catalog';
+import { products, inCollection, href as hrefPl, pln as plnPl, imgSrc, srcset, posts, productPath } from '../lib/shop';
+import { langOf, t, plural, pname, HTML_LANG, lp } from '../i18n';
+import { abs } from '../lib/shop';
+const L = langOf(Astro.url.pathname);
+const href = (p: string) => hrefPl(p, L);
+const pln = (n: number) => plnPl(n, L);
+import { itemListLd } from '../lib/schema';
+
+const sets = ['2w1', '3w1', '4w1', '5w1', '7w1'].map((n) => {
+  const col = byPath(`zestawy-kompresyjne/${n}`)!;
+  const items = inCollection(col);
+  return { n, k: Number(n[0]), col, count: items.length, from: items.length ? Math.min(...items.map((p) => p.price)) : 0 };
+}).filter((s) => s.count);
+
+const hero = products.find((p) => p.name.startsWith('7w1')) || products[0];
+const newest = products.filter((p) => p.inStock).slice(0, 8);
+const types = ['rashguardy', 'legginsy-kompresyjne', 'spodenki-kompresyjne', 'bluzy-kompresyjne'].map((path) => {
+  const col = byPath(path)!; const items = inCollection(col);
+  return { col, count: items.length, img: items[0]?.images[0], from: items.length ? Math.min(...items.map((p) => p.price)) : 0 };
+});
+const minPrice = Math.min(...products.map((p) => p.price));
+const allSizes = [...new Set(products.flatMap((p) => p.sizes))];
+const latestPosts = L === 'pl' ? posts.slice(0, 3) : [];
+---
+<Base
+  title={t(L, 'Odzież kompresyjna męska i zestawy treningowe | Gym Compression')}
+  description={t(L, 'Odzież kompresyjna i termoaktywna: zestawy 2w1–7w1, rashguardy, legginsy, spodenki i bluzy na siłownię, sporty walki, crossfit i bieganie. Dobierz rozmiar online.')}
+  path=""
+  jsonld={[
+    { '@context': 'https://schema.org', '@type': 'WebSite', '@id': 'https://gymcompression.pl/#website', name: 'Gym Compression', url: 'https://gymcompression.pl/', inLanguage: HTML_LANG[L], publisher: { '@id': 'https://gymcompression.pl/#organization' } },
+    itemListLd(newest.map((p) => ({ url: abs(lp(L, productPath(p))), name: pname(L, p.name) }))),
+  ]}
+>
+  <section class="hero">
+    <div class="wrap hero__in">
+      <div class="hero__copy">
+        <p class="eyebrow">{t(L, 'Siłownia · Sporty walki · Crossfit · Bieganie')}</p>
+        <h1 set:html={t(L, 'Odzież kompresyjna na&nbsp;każdy trening')} />
+        <p class="hero__lead">{t(L, 'Zestawy od 2 do 7 elementów, rashguardy, legginsy i bluzy. Termoaktywny, szybkoschnący materiał i krój, który trzyma mięśnie tam, gdzie trzeba.')}</p>
+        <div class="hero__cta">
+          <a class="btn" href={href('zestawy-kompresyjne')}>{t(L, 'Zobacz zestawy')}</a>
+          <a class="btn btn--ghost" href="#rozmiar">{t(L, 'Dobierz rozmiar')}</a>
+        </div>
+        <dl class="hero__facts">
+          <div><dt class="eyebrow">{t(L, 'Produkty')}</dt><dd class="mono">{products.length}</dd></div>
+          <div><dt class="eyebrow">{t(L, 'Rozmiary')}</dt><dd class="mono">{allSizes[0] === 'S' ? 'S' : 'M'}–3XL</dd></div>
+          <div><dt class="eyebrow">{t(L, 'Ceny od')}</dt><dd class="mono">{pln(minPrice)}</dd></div>
+        </dl>
+      </div>
+      <a class="hero__media" href={href(productPath(hero))}>
+        <img src={imgSrc(hero.images[0].base, 960)} srcset={srcset(hero.images[0].base)} sizes="(max-width: 900px) 100vw, 50vw" width={hero.images[0].w} height={hero.images[0].h} alt={L === 'pl' ? hero.images[0].alt : pname(L, hero.name)} fetchpriority="high" />
+        <span class="hero__tag"><span class="eyebrow">{t(L, 'Najpełniejszy zestaw')}</span><strong>{pname(L, hero.name)}</strong><span class="price">{pln(hero.price)}</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="sets-h">
+    <div class="wrap">
+      <div class="section__head">
+        <div style="display:grid;gap:.6rem"><p class="eyebrow">{t(L, 'Zestawy kompresyjne')}</p><h2 id="sets-h">{t(L, 'Ile warstw potrzebujesz?')}</h2></div>
+        <p>{t(L, 'Każdy zestaw to komplet elementów, które nosisz razem lub osobno. Więcej elementów to więcej konfiguracji na chłodne i ciepłe dni.')}</p>
+      </div>
+      <ol class="sets">
+        {sets.map((s) => (
+          <li>
+            <a class="set" href={href(s.col.path)}>
+              <span class="set__layers" aria-hidden="true">{Array.from({ length: 7 }, (_, i) => <i class={i < s.k ? 'on' : ''}></i>)}</span>
+              <span class="set__n">{L === 'en' ? s.n.replace('w', '-in-') : L === 'uk' ? s.n.replace('w', ' в ') : s.n}</span>
+              <span class="set__meta"><span>{s.k} {plural(L, s.k, ['element', 'elementy', 'elementów'])}</span><span>{s.count} {plural(L, s.count, ['wzór', 'wzory', 'wzorów'])}</span></span>
+              <span class="set__from">{t(L, 'od')} <span class="price">{pln(s.from)}</span></span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0" aria-labelledby="new-h">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 id="new-h">{t(L, 'Najnowsze w sklepie')}</h2>
+        <a class="link-arrow" href={href('sklep')}>{t(L, 'Wszystkie produkty')}</a>
+      </div>
+      <div class="grid">{newest.map((p) => <ProductCard p={p} />)}</div>
+    </div>
+  </section>
+
+  <section class="section section--chalk" aria-labelledby="types-h">
+    <div class="wrap">
+      <div class="section__head"><h2 id="types-h">{t(L, 'Pojedyncze elementy')}</h2><p>{t(L, 'Uzupełnij zestaw albo zbuduj własny.')}</p></div>
+      <div class="types">
+        {types.map((tp) => (
+          <a class="type" href={href(tp.col.path)}>
+            <span class="type__img">{tp.img && <img src={imgSrc(tp.img.base, 480)} srcset={srcset(tp.img.base)} sizes="(max-width: 760px) 50vw, 25vw" width={tp.img.w} height={tp.img.h} alt="" loading="lazy" decoding="async" />}</span>
+            <span class="type__txt"><strong>{t(L, tp.col.name)}</strong><span class="mono">{tp.count} · {t(L, 'od')} {pln(tp.from)}</span></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="rozmiar" aria-labelledby="size-h">
+    <div class="wrap fit">
+      <div class="fit__copy">
+        <p class="eyebrow">{t(L, 'Dobór rozmiaru')}</p>
+        <h2 id="size-h">{t(L, 'Kompresja działa, gdy rozmiar się zgadza')}</h2>
+        <p>{t(L, 'Za luźna odzież nie wspiera mięśni, za ciasna ogranicza ruch. Wpisz wzrost i wagę, a pokażemy rozmiar z tabeli dopasowania Gym Compression.')}</p>
+        <SizeAdvisor id="home-sa" />
+      </div>
+      <div class="fit__table">
+        <SizeTable />
+        <a class="link-arrow" href={href('tabela-rozmiarow')}>{t(L, 'Pełna tabela i instrukcja pomiaru')}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="section__head"><h2 id="how-h">{t(L, 'Jak to działa')}</h2></div>
+      <ol class="how">
+        <li><span class="how__k">{t(L, 'Termoaktywność')}</span><span class="how__arrow" aria-hidden="true">→</span><span>{t(L, 'odprowadzanie potu, sucha skóra i komfort podczas wysiłku')}</span></li>
+        <li><span class="how__k">{t(L, 'Kompresja')}</span><span class="how__arrow" aria-hidden="true">→</span><span>{t(L, 'wsparcie i stabilizacja mięśni w trakcie treningu')}</span></li>
+        <li><span class="how__k">{t(L, 'Elastyczność')}</span><span class="how__arrow" aria-hidden="true">→</span><span>{t(L, 'dopasowanie do sylwetki i pełna swoboda ruchu')}</span></li>
+        <li><span class="how__k">{t(L, 'Zestaw')}</span><span class="how__arrow" aria-hidden="true">→</span><span>{t(L, 'jeden komplet na różne warunki i dyscypliny')}</span></li>
+      </ol>
+    </div>
+  </section>
+
+  {latestPosts.length > 0 && (
+    <section class="section" aria-labelledby="blog-h">
+      <div class="wrap">
+        <div class="section__head"><h2 id="blog-h">Poradnik</h2><a class="link-arrow" href="https://gymcompression.pl/blog/">Wszystkie artykuły</a></div>
+        <div class="posts">
+          {latestPosts.map((p) => <a class="post" href={`https://gymcompression.pl${p.url}`}><span class="eyebrow">{new Date(p.date).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })}</span><h3>{p.title}</h3><p>{p.excerpt.slice(0, 170)}{p.excerpt.length > 170 ? '…' : ''}</p></a>)}
+        </div>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .hero { background: var(--chalk); }
+  .hero__in { display: grid; grid-template-columns: 1.05fr 1fr; gap: var(--s-7); align-items: center; padding-block: var(--s-7); }
+  .hero__copy { display: grid; gap: var(--s-5); align-content: center; }
+  .hero h1 { font-size: var(--t-3xl); font-stretch: 118%; line-height: .92; }
+  .hero__lead { font-size: var(--t-lg); max-width: 44ch; color: var(--graphite); line-height: 1.5; }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+  .hero__facts { display: flex; gap: var(--s-6); margin: var(--s-2) 0 0; padding-top: var(--s-5); border-top: 1px solid var(--line); }
+  .hero__facts div { display: grid; gap: .3rem; }
+  .hero__facts dd { margin: 0; font-size: var(--t-lg); font-weight: 600; }
+  .hero__media { position: relative; display: block; border-radius: 8px; overflow: hidden; background: var(--paper); aspect-ratio: 4 / 5; max-height: 78vh; justify-self: end; width: 100%; max-width: 620px; }
+  .hero__media img { width: 100%; height: 100%; object-fit: cover; }
+  .hero__tag { position: absolute; left: var(--s-4); right: var(--s-4); bottom: var(--s-4); display: grid; grid-template-columns: 1fr auto; gap: .2rem var(--s-4); align-items: end; padding: var(--s-4); background: var(--paper); border-radius: 6px; text-decoration: none; }
+  .hero__tag .eyebrow { grid-column: 1 / -1; }
+  .hero__media:hover { color: var(--ink); }
+  @media (max-width: 900px) {
+    .hero__in { grid-template-columns: minmax(0, 1fr); gap: var(--s-5); padding-block: var(--s-5) var(--s-6); }
+    .hero h1 { font-size: clamp(2rem, 9.4vw, 3.4rem); font-stretch: 104%; }
+    .hero__media { justify-self: stretch; max-width: none; aspect-ratio: 1 / 1; }
+    .hero__facts { gap: var(--s-5); }
+  }
+
+  .sets { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--s-3); }
+  .set { display: grid; gap: var(--s-3); padding: var(--s-5) var(--s-4); border: 1px solid var(--line); border-radius: 10px; text-decoration: none; height: 100%; transition: border-color .15s, transform .15s; }
+  .set:hover { border-color: var(--ink); color: var(--ink); transform: translateY(-2px); }
+  .set__layers { display: flex; flex-direction: column-reverse; gap: 3px; width: 2.4rem; }
+  .set__layers i { display: block; height: 5px; border-radius: 2px; background: var(--line); }
+  .set__layers i.on { background: var(--tape); }
+  .set__n { font: 900 var(--t-2xl)/.9 var(--f-display); font-stretch: 125%; }
+  .set__meta { display: grid; gap: .1rem; font-size: var(--t-sm); color: var(--muted); }
+  .set__from { font-size: var(--t-sm); margin-top: auto; padding-top: var(--s-3); border-top: 1px solid var(--line); }
+  @media (max-width: 900px) { .sets { grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); } }
+
+  .types { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-4); }
+  .type { display: grid; gap: var(--s-3); text-decoration: none; }
+  .type__img { aspect-ratio: 1; background: var(--paper); border-radius: 6px; overflow: hidden; }
+  .type__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+  .type:hover img { transform: scale(1.04); }
+  .type__txt { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-2); flex-wrap: wrap; }
+  .type__txt strong { font: 800 var(--t-lg)/1 var(--f-display); font-stretch: 112%; text-transform: uppercase; }
+  .type__txt .mono { font-size: var(--t-xs); color: var(--muted); }
+  @media (max-width: 760px) { .types { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  .fit { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-8); align-items: start; }
+  .fit > * { min-width: 0; }
+  .fit__copy { display: grid; gap: var(--s-4); }
+  .fit__copy > p:not(.eyebrow) { color: var(--graphite); max-width: 52ch; }
+  .fit__table { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-4); padding: var(--s-5); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
+  @media (max-width: 900px) { .fit { grid-template-columns: 1fr; gap: var(--s-6); } }
+
+  .section--dark { background: var(--ink); color: #e9ecee; }
+  .how { list-style: none; margin: 0; padding: 0; display: grid; }
+  .how li { display: grid; grid-template-columns: minmax(12rem, 30rem) 3rem 1fr; align-items: baseline; gap: var(--s-4); padding-block: var(--s-5); border-top: 1px solid #2b3135; }
+  .how__k { font: 800 var(--t-xl)/1 var(--f-display); font-stretch: 105%; text-transform: uppercase; color: #fff; }
+  .how__arrow { font: 400 var(--t-xl)/1 var(--f-mono); color: #7f9cff; }
+  .how li span:last-child { color: #c9ced1; font-size: var(--t-lg); }
+  @media (max-width: 700px) { .how li { grid-template-columns: 1fr; gap: .4rem; } .how__arrow { display: none; } }
+
+  .posts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-5); }
+  .post { display: grid; gap: var(--s-3); align-content: start; padding-top: var(--s-4); border-top: 2px solid var(--ink); text-decoration: none; }
+  .post h3 { font-size: var(--t-lg); }
+  .post p { color: var(--muted); font-size: var(--t-sm); }
+  @media (max-width: 860px) { .posts { grid-template-columns: 1fr; } }
+</style>

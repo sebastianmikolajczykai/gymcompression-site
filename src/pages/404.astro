@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { href as hrefPl } from '../lib/shop';
+import { langOf, t } from '../i18n';
+const L = langOf(Astro.url.pathname);
+const href = (p: string) => hrefPl(p, L);
+---
+<Base title={`${t(L, 'Nie znaleziono strony')} | Gym Compression`} description={t(L, 'Ta strona nie istnieje.')} path="404" noindex>
+  <div class="wrap" style="padding-block:var(--s-9);display:grid;gap:var(--s-5);max-width:640px">
+    <p class="eyebrow">{t(L, 'Błąd 404')}</p>
+    <h1>{t(L, 'Nie ma takiej strony')}</h1>
+    <p>{t(L, 'Adres mógł się zmienić. Sprawdź zestawy albo wróć na stronę główną.')}</p>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap"><a class="btn" href={href('zestawy-kompresyjne')}>{t(L, 'Zestawy kompresyjne')}</a><a class="btn btn--ghost" href={href('')}>{t(L, 'Strona główna')}</a></div>
+  </div>
+</Base>

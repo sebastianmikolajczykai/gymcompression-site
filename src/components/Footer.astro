@@ -1,0 +1,46 @@
+---
+import { company, collections } from '../data/catalog';
+import { href as hrefPl } from '../lib/shop';
+import { langOf, t } from '../i18n';
+const L = langOf(Astro.url.pathname);
+const href = (p: string) => hrefPl(p, L);
+const plOnly = L !== 'pl' ? ` (${t(L, 'po polsku')})` : '';
+const shop = ['zestawy-kompresyjne', 'rashguardy', 'legginsy-kompresyjne', 'spodenki-kompresyjne', 'bluzy-kompresyjne', 'odziez-kompresyjna-damska'].map((p) => collections.find((c) => c.path === p)!);
+const year = new Date().getFullYear();
+---
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr__grid">
+      <div style="display:grid;gap:1rem;align-content:start">
+        <a class="logo" href={href('')}><b>Gym</b><span>Compression</span></a>
+        <p style="max-width:34ch;font-size:.9rem">{t(L, 'Odzież kompresyjna i termoaktywna na siłownię, sporty walki, crossfit i bieganie.')}</p>
+      </div>
+      <div>
+        <h2>{t(L, 'Sklep')}</h2>
+        <ul>{shop.map((c) => <li><a href={href(c.path)}>{t(L, c.name)}</a></li>)}</ul>
+      </div>
+      <div>
+        <h2>{t(L, 'Pomoc')}</h2>
+        <ul>
+          <li><a href={href('tabela-rozmiarow')}>{t(L, 'Tabela rozmiarów')}</a></li>
+          <li><a href="https://gymcompression.pl/wysylka-i-dostawa/" rel="noopener">{t(L, 'Wysyłka i dostawa')}{plOnly}</a></li>
+          <li><a href="https://gymcompression.pl/refund_returns/" rel="noopener">{t(L, 'Zwroty i reklamacje')}{plOnly}</a></li>
+          <li><a href="https://gymcompression.pl/regulamin/" rel="noopener">{t(L, 'Regulamin')}{plOnly}</a></li>
+          <li><a href="https://gymcompression.pl/polityka-prywatnosci/" rel="noopener">{t(L, 'Polityka prywatności')}{plOnly}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>{t(L, 'Kontakt')}</h2>
+        <ul>
+          <li>{company.street}<br />{company.postal} {company.city}</li>
+          <li class="mono">{company.phone}</li>
+          <li class="mono">{company.email}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ftr__base">
+      <span>© {year} Gym Compression</span>
+      <span>{t(L, 'Płatności online: Przelewy24')}</span>
+    </div>
+  </div>
+</footer>
