@@ -18,12 +18,13 @@ const children = collections.filter((x) => x.parent === c.path);
 const siblings = c.parent ? collections.filter((x) => x.parent === c.parent) : [];
 const parent = c.parent ? collections.find((x) => x.path === c.parent) : undefined;
 // Opis kategorii i meta z obecnego sklepu (pierwsza pasująca kategoria WooCommerce)
-const woo = L === 'pl' ? c.woo.map(catBySlug).find(Boolean) : undefined;
+const woo = L === 'pl' && !c.ownSeo ? c.woo.map(catBySlug).find(Boolean) : undefined;
 const crumbs = [{ name: t(L, 'Strona główna'), path: '' }, ...trail(c).map((x) => ({ name: t(L, x.name), path: x.path }))];
 const ldCrumbs = crumbs.map((x) => ({ ...x, path: lp(L, x.path) }));
 const sizes = [...new Set(items.flatMap((p) => p.sizes))].sort((a, b) => ['S', 'M', 'L', 'XL', 'XXL', '3XL'].indexOf(a) - ['S', 'M', 'L', 'XL', 'XXL', '3XL'].indexOf(b));
-const title = woo?.seoTitle || `${t(L, c.h1)} | Gym Compression`;
-const description = woo?.seoDesc || `${t(L, c.intro)} ${tf(L, '{n} produktów w rozmiarach {a}–{b}.', { n: items.length, a: sizes[0], b: sizes.at(-1)! })}`;
+// Tytuł z H1 (słowa kluczowe kategorii), nie z AIOSEO, gdzie były same „Bluzy”, „Legginsy”.
+const title = L === 'pl' && c.title ? c.title : `${t(L, c.h1)} | Gym Compression`;
+const description = (L === 'pl' && c.desc) || woo?.seoDesc || `${t(L, c.intro)} ${tf(L, '{n} produktów w rozmiarach {a}–{b}.', { n: items.length, a: sizes[0], b: sizes.at(-1)! })}`;
 const chips = children.length ? children : siblings;
 ---
 <Base title={title} description={description} path={c.path} noindex={c.noindex} activeNav={trail(c)[0]?.path === 'odziez-kompresyjna-meska' ? trail(c)[1]?.path : c.path}

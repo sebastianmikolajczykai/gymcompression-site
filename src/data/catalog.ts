@@ -9,13 +9,27 @@ export interface Collection {
   parent?: string;
   intro: string;         // krótki lead nad listą (z opisu kategorii, bez nowych twierdzeń)
   noindex?: boolean;
+  title?: string;        // tytuł strony (domyślnie: H1 + „| Gym Compression”)
+  desc?: string;         // opis meta (≤160 znaków); domyślnie opis z kategorii WooCommerce
+  ownSeo?: boolean;      // nie bierz opisu i meta z kategorii WooCommerce (np. kolekcja łącząca kilka kategorii)
 }
+
+// Opisy meta podkategorii zestawów (≤160 znaków, bez nowych twierdzeń względem opisów w sklepie)
+const ZESTAW_DESC: Record<string, string> = {
+  '2w1': 'Zestawy kompresyjne 2w1 dla mężczyzn – dwa dopasowane elementy odzieży kompresyjnej w jednym komplecie. Najprostszy start z kompresją.',
+  '3w1': 'Zestawy kompresyjne 3w1 dla mężczyzn – trzy elementy odzieży treningowej w jednym komplecie. Na siłownię, crossfit i sporty walki.',
+  '4w1': 'Zestawy kompresyjne 4w1 Gym Compression i Spartan – cztery elementy odzieży treningowej w jednym komplecie dla mężczyzn.',
+  '5w1': 'Zestawy kompresyjne 5w1 dla mężczyzn – pięć elementów odzieży treningowej na każdy rodzaj treningu. Sprawdź kolory i rozmiary.',
+  '7w1': 'Zestaw kompresyjny 7w1 – najbardziej rozbudowany komplet Gym Compression: siedem elementów odzieży treningowej w jednym zamówieniu.',
+};
 
 export const collections: Collection[] = [
   {
     path: 'sklep',
     name: 'Wszystkie produkty',
     h1: 'Odzież kompresyjna',
+    title: 'Odzież kompresyjna męska i damska | Gym Compression',
+    desc: 'Odzież kompresyjna Gym Compression: zestawy, rashguardy, legginsy, spodenki i bluzy na siłownię, crossfit i sporty walki. Sprawdź ofertę.',
     woo: ['odziez-kompresyjna', 'odziez-meska', 'odziez-damska'],
     old: ['/shop/', '/product-category/odziez-kompresyjna/'],
     intro: 'Zestawy, rashguardy, legginsy, spodenki i bluzy kompresyjne Gym Compression.',
@@ -24,6 +38,8 @@ export const collections: Collection[] = [
     path: 'odziez-kompresyjna-meska',
     name: 'Mężczyźni',
     h1: 'Odzież kompresyjna męska',
+    title: 'Odzież kompresyjna męska na siłownię | Gym Compression',
+    desc: 'Męska odzież kompresyjna: rashguardy, legginsy, spodenki, bluzy i zestawy od 2w1 do 7w1. Wsparcie mięśni i swoboda ruchu na każdym treningu.',
     woo: ['odziez-meska'],
     old: ['/product-category/odziez-kompresyjna/odziez-meska/'],
     intro: 'Męska odzież kompresyjna i termoaktywna na siłownię, sporty walki, crossfit i bieganie.',
@@ -32,6 +48,8 @@ export const collections: Collection[] = [
     path: 'zestawy-kompresyjne',
     name: 'Zestawy',
     h1: 'Zestawy kompresyjne męskie',
+    title: 'Zestawy kompresyjne męskie 2w1–7w1 | Gym Compression',
+    desc: 'Zestawy kompresyjne męskie od 2w1 do 7w1 – kompletny strój treningowy w jednym zamówieniu. Na siłownię, crossfit i MMA.',
     woo: ['zestawy-kompresyjne-meskie', 'zestawy-kompresyjne-meskie-2w1', 'zestawy-kompresyjne-meskie-3w1', 'zestawy-kompresyjne-meskie-4w1', 'zestawy-kompresyjne-meskie-5w1', 'zestawy-kompresyjne-meskie-7w1'],
     old: ['/product-category/odziez-kompresyjna/odziez-meska/zestawy-kompresyjne-meskie/'],
     parent: 'odziez-kompresyjna-meska',
@@ -41,6 +59,8 @@ export const collections: Collection[] = [
     path: `zestawy-kompresyjne/${n}`,
     name: `Zestawy ${n}`,
     h1: `Zestawy kompresyjne ${n}`,
+    title: `Zestaw kompresyjny ${n} męski | Gym Compression`,
+    desc: ZESTAW_DESC[n],
     woo: [`zestawy-kompresyjne-meskie-${n}`],
     old: [`/product-category/odziez-kompresyjna/odziez-meska/zestawy-kompresyjne-meskie/zestawy-kompresyjne-meskie-${n}/`],
     parent: 'zestawy-kompresyjne',
@@ -50,8 +70,11 @@ export const collections: Collection[] = [
     path: 'rashguardy',
     name: 'Rashguardy',
     h1: 'Rashguardy kompresyjne',
+    title: 'Rashguardy kompresyjne męskie | Gym Compression',
+    desc: 'Rashguardy kompresyjne z krótkim i długim rękawem dla mężczyzn – na siłownię, BJJ, MMA i trening funkcjonalny.',
     woo: ['rashguardy-dlugi-rekaw', 'rashguardy-krotki-rekaw'],
     old: [],
+    ownSeo: true,
     parent: 'odziez-kompresyjna-meska',
     intro: 'Rashguardy z krótkim i długim rękawem na siłownię, BJJ, MMA i trening funkcjonalny.',
   },
@@ -59,6 +82,8 @@ export const collections: Collection[] = [
     path: 'rashguardy/dlugi-rekaw',
     name: 'Długi rękaw',
     h1: 'Rashguardy z długim rękawem',
+    title: 'Rashguard z długim rękawem męski – MMA, BJJ | Gym Compression',
+    desc: 'Rashguardy z długim rękawem dla mężczyzn – kompresyjna koszulka na MMA, BJJ, kickboxing i crossfit. Chroni skórę i wspiera mięśnie.',
     woo: ['rashguardy-dlugi-rekaw'],
     old: ['/product-category/odziez-kompresyjna/odziez-meska/rashguardy-dlugi-rekaw/'],
     parent: 'rashguardy',
@@ -68,6 +93,8 @@ export const collections: Collection[] = [
     path: 'rashguardy/krotki-rekaw',
     name: 'Krótki rękaw',
     h1: 'Rashguardy z krótkim rękawem',
+    title: 'Rashguard z krótkim rękawem męski | Gym Compression',
+    desc: 'Rashguardy z krótkim rękawem dla mężczyzn – lżejsza koszulka kompresyjna na siłownię, crossfit i cieplejsze treningi.',
     woo: ['rashguardy-krotki-rekaw'],
     old: ['/product-category/odziez-kompresyjna/odziez-meska/rashguardy-krotki-rekaw/'],
     parent: 'rashguardy',
@@ -77,6 +104,7 @@ export const collections: Collection[] = [
     path: 'legginsy-kompresyjne',
     name: 'Legginsy',
     h1: 'Legginsy kompresyjne męskie',
+    desc: 'Męskie legginsy kompresyjne Gym Compression – stabilizacja mięśni i komfort na siłowni, w bieganiu i sportach walki.',
     woo: ['legginsy'],
     old: ['/product-category/odziez-kompresyjna/odziez-meska/legginsy/'],
     parent: 'odziez-kompresyjna-meska',
@@ -86,6 +114,8 @@ export const collections: Collection[] = [
     path: 'spodenki-kompresyjne',
     name: 'Spodenki',
     h1: 'Spodenki kompresyjne męskie',
+    title: 'Spodenki kompresyjne i sportowe męskie | Gym Compression',
+    desc: 'Spodenki kompresyjne i sportowe dla mężczyzn – swoboda ruchu i wsparcie mięśni na siłowni, w crossficie i sportach walki.',
     woo: ['spodenki'],
     old: ['/product-category/odziez-kompresyjna/odziez-meska/spodenki/'],
     parent: 'odziez-kompresyjna-meska',
@@ -95,6 +125,8 @@ export const collections: Collection[] = [
     path: 'bluzy-kompresyjne',
     name: 'Bluzy',
     h1: 'Bluzy kompresyjne męskie',
+    title: 'Bluzy kompresyjne męskie z kapturem | Gym Compression',
+    desc: 'Męskie bluzy kompresyjne z kapturem – termoaktywne, na trening i na co dzień. Łączą styl streetwear z funkcjonalnością.',
     woo: ['bluzy'],
     old: ['/product-category/odziez-kompresyjna/odziez-meska/bluzy/'],
     parent: 'odziez-kompresyjna-meska',
@@ -104,6 +136,7 @@ export const collections: Collection[] = [
     path: 'odziez-kompresyjna-damska',
     name: 'Kobiety',
     h1: 'Odzież kompresyjna damska',
+    desc: 'Damska odzież kompresyjna Gym Compression do treningu, sportu i aktywnego stylu życia. Sprawdź zestawy dla kobiet.',
     woo: ['odziez-damska', 'zestawy-kompresyjne-damskie', 'zestawy-kompresyjne-damskie-5w1'],
     old: [
       '/product-category/odziez-kompresyjna/odziez-damska/',

@@ -4,6 +4,7 @@ import postsRaw from '../data/posts.json';
 import pagesRaw from '../data/pages.json';
 import metaRaw from '../data/meta.json';
 import { collections, type Collection } from '../data/catalog';
+import { productOverrides } from '../data/overrides';
 
 export interface Img { base: string; w: number; h: number; alt: string; original?: string }
 export interface Product {
@@ -34,7 +35,7 @@ export function fixHtml(html = ''): string {
     });
 }
 
-export const products = (productsRaw as Product[]).map((p) => ({ ...p, descHtml: fixHtml(p.descHtml) })).sort((a, b) => b.id - a.id);
+export const products = (productsRaw as Product[]).map((p) => ({ ...p, ...productOverrides[p.slug], descHtml: fixHtml(p.descHtml) })).sort((a, b) => b.id - a.id);
 export const categories = (categoriesRaw as Category[]).map((c) => ({ ...c, descHtml: fixHtml(c.descHtml) }));
 export const posts = postsRaw as { title: string; url: string; date: string; excerpt: string }[];
 export const pages = Object.fromEntries(Object.entries(pagesRaw as Record<string, { title: string; html: string; seoDesc: string }>).map(([k, v]) => [k, { ...v, html: fixHtml(v.html) }]));

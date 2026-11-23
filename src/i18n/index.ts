@@ -6,6 +6,9 @@ import uk from './uk.json';
 export type Lang = 'pl' | 'en' | 'uk';
 export const LANGS: Lang[] = ['pl', 'en', 'uk'];
 export const FOREIGN: Lang[] = ['en', 'uk'];
+// Języki widoczne dla Google (index, sitemap, hreflang). EN/UA mają robocze tłumaczenia,
+// więc na start są noindex. Po weryfikacji tłumaczeń: ['pl', 'en', 'uk'].
+export const INDEXED_LANGS: Lang[] = ['pl'];
 export const LANG_LABEL: Record<Lang, string> = { pl: 'PL', en: 'EN', uk: 'UA' };
 export const LANG_NAME: Record<Lang, string> = { pl: 'Polski', en: 'English', uk: 'Українська' };
 export const HTML_LANG: Record<Lang, string> = { pl: 'pl', en: 'en', uk: 'uk' };
