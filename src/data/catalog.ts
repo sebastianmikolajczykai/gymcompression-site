@@ -9,6 +9,8 @@ export interface Collection {
   parent?: string;
   intro: string;         // krótki lead nad listą (z opisu kategorii, bez nowych twierdzeń)
   noindex?: boolean;
+  title?: string;        // tytuł strony (domyślnie: H1 + „| Gym Compression”)
+  ownSeo?: boolean;      // nie bierz opisu i meta z kategorii WooCommerce (np. kolekcja łącząca kilka kategorii)
 }
 
 export const collections: Collection[] = [
@@ -32,6 +34,7 @@ export const collections: Collection[] = [
     path: 'zestawy-kompresyjne',
     name: 'Zestawy',
     h1: 'Zestawy kompresyjne męskie',
+    title: 'Zestawy kompresyjne męskie 2w1–7w1 | Gym Compression',
     woo: ['zestawy-kompresyjne-meskie', 'zestawy-kompresyjne-meskie-2w1', 'zestawy-kompresyjne-meskie-3w1', 'zestawy-kompresyjne-meskie-4w1', 'zestawy-kompresyjne-meskie-5w1', 'zestawy-kompresyjne-meskie-7w1'],
     old: ['/product-category/odziez-kompresyjna/odziez-meska/zestawy-kompresyjne-meskie/'],
     parent: 'odziez-kompresyjna-meska',
@@ -52,6 +55,7 @@ export const collections: Collection[] = [
     h1: 'Rashguardy kompresyjne',
     woo: ['rashguardy-dlugi-rekaw', 'rashguardy-krotki-rekaw'],
     old: [],
+    ownSeo: true,
     parent: 'odziez-kompresyjna-meska',
     intro: 'Rashguardy z krótkim i długim rękawem na siłownię, BJJ, MMA i trening funkcjonalny.',
   },
@@ -95,6 +99,7 @@ export const collections: Collection[] = [
     path: 'bluzy-kompresyjne',
     name: 'Bluzy',
     h1: 'Bluzy kompresyjne męskie',
+    title: 'Bluzy kompresyjne męskie z kapturem | Gym Compression',
     woo: ['bluzy'],
     old: ['/product-category/odziez-kompresyjna/odziez-meska/bluzy/'],
     parent: 'odziez-kompresyjna-meska',
