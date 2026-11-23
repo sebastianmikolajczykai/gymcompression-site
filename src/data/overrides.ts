@@ -1,12 +1,51 @@
 // Poprawki danych pobranych z WooCommerce (fetch-data.mjs nadpisuje products.json, więc poprawki trzymamy tutaj).
-// Te same błędy są w obecnym sklepie: po akceptacji Daniela poprawić też w WooCommerce.
-export const productOverrides: Record<string, { short?: string; seoTitle?: string }> = {
-  // W sklepie krótki opis był opisem zestawu 2w1 Spartan Blitz. Skład wg setItems tego produktu.
-  '5w1-spartan-black': {
-    short: 'Spartan Black 5w1 – bluza, rashguard krótki i długi rękaw, spodnie kompresyjne i szorty. Kompletny zestaw treningowy na każdą aktywność.',
-  },
-  // Ten sam tytuł SEO co „Street Hood” (bez Plus): dwie strony konkurowały o tę samą frazę.
-  '2w1-gym-compression-street-hood-plus': {
-    seoTitle: 'Zestaw kompresyjny 2w1 kaptur Street Hood Plus – Gym Compression',
-  },
+// Źródło: analiza SEO sklepu z 23.11.2026 (projekt: wdrozenie-seo-sklep/produkty-tytuly.csv). Te same zmiany są do wprowadzenia w WooCommerce.
+// - seoTitle: bez podwójnej marki „Gym Compression … | Gym Compression”, słowo „kompresyjne” przy bluzach i legginsach, rozdzielone tytuły Street Hood.
+// - seoDesc: tylko poprawki literówek („meżczyzn”, „material”).
+// - 5w1-spartan-black.short: w sklepie był opis zestawu 2w1 Spartan Blitz; skład z długiego opisu tego produktu.
+// - name: tylko literówka „Streed” → „Street” (zmiany nazw produktów są decyzją Daniela).
+export const productOverrides: Record<string, { short?: string; seoTitle?: string; seoDesc?: string; name?: string }> = {
+  '2w1-gym-compression-active-graphite-plus': {"seoTitle": "Zestaw kompresyjny 2w1 Active Graphite Plus – Gym Compression"},
+  '2w1-gym-compression-prime-black-plus': {"seoTitle": "Zestaw sportowy męski 2w1 Prime Black Plus – Gym Compression", "seoDesc": "Zestaw sportowy męski 2w1 Prime Black Plus – rozbudowany strój kompresyjny. Termoaktywny materiał, spodenki kompresyjne. Idealny na siłownię i rower. Sprawdź!"},
+  '2w1-gym-compression-street-hood': {"seoTitle": "Zestaw kompresyjny 2w1 Street Hood – Gym Compression"},
+  '2w1-gym-compression-street-hood-plus': {"seoTitle": "Zestaw kompresyjny 2w1 Street Hood Plus – Gym Compression"},
+  '3w1-spartan-black-grey': {"seoTitle": "Spartan komplet treningowy 3w1 Black & Grey – Gym Compression"},
+  '3w1-spartan-grey-camo': {"seoTitle": "Spartan odzież kompresyjna 3w1 Grey & Camo – Gym Compression"},
+  '3w1-spartan-titanic-black': {"seoDesc": "Spartan zestaw 3w1 kompresyjny Titanic Black – trzy elementy odzieży męskiej na siłownię i sporty walki. Termoaktywny materiał. Rozmiary M-3XL. Sprawdź teraz!"},
+  '4w1-gym-compression-eclipse-grey': {"seoTitle": "Zestaw kompresyjny 4w1 siłownia Eclipse Grey – Gym Compression"},
+  '5w1-gym-compression-black-white': {"seoTitle": "Kompresyjny strój treningowy 5w1 Black & White – Gym Compression"},
+  '5w1-gym-compression-noir-fit': {"seoTitle": "Zestaw kompresyjny 5w1 Noir Fit – Gym Compression"},
+  '5w1-gym-compression-obsidian-black': {"seoDesc": "Odzież sportowa 5w1 Obsidian Black dla mężczyzn – 5 elementów, termoaktywny materiał, szybkie schnięcie. Na siłownię i sporty walki. Kup!"},
+  '5w1-gym-compression-olive-black': {"seoTitle": "Zestaw kompresyjny 5w1 crossfit Olive Black – Gym Compression"},
+  '5w1-spartan-black': {"short": "Zestaw kompresyjny 5w1 Spartan Black – bluza z kapturem, rashguard z krótkim rękawem, rashguard z długim rękawem, spodnie kompresyjne i spodenki sportowe. Oddychający, szybkoschnący materiał i wsparcie mięśni podczas każdego treningu."},
+  '5w1-spartan-black-grey': {"seoDesc": "Spartan komplet treningowy 5w1 Black Grey – kompresyjna odzież męska na siłowni i crossfit. 5 elementów, termoaktywny materiał. Rozmiary M-3XL. Kup!"},
+  '5w1-spartan-grey-camo': {"seoTitle": "Spartan strój sportowy 5w1 Grey & Camo – Gym Compression"},
+  'bluza-gym-compression-black-pixel': {"seoTitle": "Bluza kompresyjna z kapturem Black Pixel | Gym Compression"},
+  'bluza-gym-compression-blackwhite': {"seoTitle": "Bluza kompresyjna z kapturem Black & White | Gym Compression"},
+  'bluza-gym-compression-obsidian-black': {"seoTitle": "Bluza kompresyjna z kapturem Obsidian Black | Gym Compression"},
+  'bluza-gym-compression-olive-black': {"seoTitle": "Bluza kompresyjna z kapturem Olive Black | Gym Compression"},
+  'bluza-gym-compression-shadow-matrix': {"seoTitle": "Bluza kompresyjna z kapturem Shadow Matrix | Gym Compression"},
+  'bluza-gym-compression-urban-grey': {"seoTitle": "Bluza kompresyjna z kapturem Urban Grey | Gym Compression"},
+  'bluza-kompresyjna-gym-compression-blue-shadow': {"seoTitle": "Bluza kompresyjna z kapturem Blue Shadow | Gym Compression"},
+  'legginsy-gym-compression-blue-shadow': {"seoTitle": "Legginsy kompresyjne męskie Blue Shadow | Gym Compression"},
+  'legginsy-gym-compression-eclipse-grey': {"seoTitle": "Legginsy kompresyjne męskie Eclipse Grey | Gym Compression"},
+  'legginsy-gym-compression-prime-black': {"seoTitle": "Legginsy kompresyjne męskie Prime Black | Gym Compression"},
+  'legginsy-gym-compression-shadow-matrix': {"seoTitle": "Legginsy kompresyjne męskie Shadow Matrix | Gym Compression"},
+  'rashguard-z-dlugim-rekawem-gym-compression-black-pixel': {"seoTitle": "Rashguard z długim rękawem Black Pixel | Gym Compression"},
+  'rashguard-z-dlugim-rekawem-gym-compression-blackwhite': {"seoTitle": "Rashguard z długim rękawem Black & White | Gym Compression"},
+  'rashguard-z-dlugim-rekawem-gym-compression-blue-shadow': {"seoTitle": "Rashguard z długim rękawem Blue Shadow | Gym Compression"},
+  'rashguard-z-dlugim-rekawem-gym-compression-eclipse-grey': {"seoTitle": "Rashguard z długim rękawem Eclipse Grey | Gym Compression"},
+  'rashguard-z-dlugim-rekawem-gym-compression-olive-black': {"seoTitle": "Rashguard z długim rękawem Olive Black | Gym Compression"},
+  'rashguard-z-dlugim-rekawem-gym-compression-shadow-matrix': {"seoTitle": "Rashguard z długim rękawem Shadow Matrix | Gym Compression"},
+  'rashguard-z-kapturem-gym-compression-streed-hood': {"seoTitle": "Rashguard z kapturem Street Hood | Gym Compression", "name": "Rashguard z kapturem Gym Compression Street Hood"},
+  'rashguard-z-krotkim-rekawem-gym-compression-active-graphite': {"seoTitle": "Rashguard z krótkim rękawem Active Graphite | Gym Compression"},
+  'rashguard-z-krotkim-rekawem-gym-compression-air-mesh-black': {"seoTitle": "Rashguard z krótkim rękawem Air Mesh Black | Gym Compression"},
+  'rashguard-z-krotkim-rekawem-gym-compression-black-pixel': {"seoTitle": "Rashguard z krótkim rękawem Black Pixel | Gym Compression"},
+  'rashguard-z-krotkim-rekawem-gym-compression-blackwhite': {"seoTitle": "Rashguard z krótkim rękawem Black & White | Gym Compression"},
+  'rashguard-z-krotkim-rekawem-gym-compression-blue-shadow': {"seoTitle": "Rashguard z krótkim rękawem Blue Shadow | Gym Compression"},
+  'rashguard-z-krotkim-rekawem-gym-compression-olive-black': {"seoTitle": "Rashguard z krótkim rękawem Olive Black | Gym Compression"},
+  'rashguard-z-krotkim-rekawem-gym-compression-prime-black': {"seoTitle": "Rashguard z krótkim rękawem Prime Black | Gym Compression"},
+  'rashguard-z-krotkim-rekawem-gym-compression-prime-green': {"seoTitle": "Rashguard z krótkim rękawem Prime Green | Gym Compression"},
+  'rashguard-z-krotkim-rekawem-gym-compression-shadow-matrix': {"seoTitle": "Rashguard z krótkim rękawem Shadow Matrix | Gym Compression"},
+  'spodenki-z-legginsami-gym-compression': {"seoTitle": "Spodenki męskie z legginsami kompresyjnymi | Gym Compression"},
 };

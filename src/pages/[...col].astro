@@ -24,7 +24,7 @@ const ldCrumbs = crumbs.map((x) => ({ ...x, path: lp(L, x.path) }));
 const sizes = [...new Set(items.flatMap((p) => p.sizes))].sort((a, b) => ['S', 'M', 'L', 'XL', 'XXL', '3XL'].indexOf(a) - ['S', 'M', 'L', 'XL', 'XXL', '3XL'].indexOf(b));
 // Tytuł z H1 (słowa kluczowe kategorii), nie z AIOSEO, gdzie były same „Bluzy”, „Legginsy”.
 const title = L === 'pl' && c.title ? c.title : `${t(L, c.h1)} | Gym Compression`;
-const description = woo?.seoDesc || `${t(L, c.intro)} ${tf(L, '{n} produktów w rozmiarach {a}–{b}.', { n: items.length, a: sizes[0], b: sizes.at(-1)! })}`;
+const description = (L === 'pl' && c.desc) || woo?.seoDesc || `${t(L, c.intro)} ${tf(L, '{n} produktów w rozmiarach {a}–{b}.', { n: items.length, a: sizes[0], b: sizes.at(-1)! })}`;
 const chips = children.length ? children : siblings;
 ---
 <Base title={title} description={description} path={c.path} noindex={c.noindex} activeNav={trail(c)[0]?.path === 'odziez-kompresyjna-meska' ? trail(c)[1]?.path : c.path}
