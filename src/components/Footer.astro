@@ -23,10 +23,11 @@ const year = new Date().getFullYear();
         <h2>{t(L, 'Pomoc')}</h2>
         <ul>
           <li><a href={href('tabela-rozmiarow')}>{t(L, 'Tabela rozmiarów')}</a></li>
-          <li><a href="https://gymcompression.pl/wysylka-i-dostawa/" rel="noopener">{t(L, 'Wysyłka i dostawa')}{plOnly}</a></li>
-          <li><a href="https://gymcompression.pl/refund_returns/" rel="noopener">{t(L, 'Zwroty i reklamacje')}{plOnly}</a></li>
-          <li><a href="https://gymcompression.pl/regulamin/" rel="noopener">{t(L, 'Regulamin')}{plOnly}</a></li>
-          <li><a href="https://gymcompression.pl/polityka-prywatnosci/" rel="noopener">{t(L, 'Polityka prywatności')}{plOnly}</a></li>
+          <li><a href={hrefPl('blog')} hreflang="pl">{t(L, 'Poradnik')}{plOnly}</a></li>
+          <li><a href={hrefPl('wysylka-i-dostawa')} hreflang="pl">{t(L, 'Wysyłka i dostawa')}{plOnly}</a></li>
+          <li><a href={hrefPl('refund_returns')} hreflang="pl">{t(L, 'Zwroty i reklamacje')}{plOnly}</a></li>
+          <li><a href={hrefPl('regulamin')} hreflang="pl">{t(L, 'Regulamin')}{plOnly}</a></li>
+          <li><a href={hrefPl('polityka-prywatnosci')} hreflang="pl">{t(L, 'Polityka prywatności')}{plOnly}</a></li>
         </ul>
       </div>
       <div>

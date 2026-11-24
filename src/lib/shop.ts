@@ -18,15 +18,20 @@ export interface Category { slug: string; name: string; descHtml: string; seoTit
 // Treści przeniesione ze starego sklepu: puste <img>/<video> (bez src) out, stare adresy -> nowe.
 const OLD_TO_NEW: Record<string, string> = Object.fromEntries([
   ['/tabela-rozmiarow-2/', '/tabela-rozmiarow/'],
+  // Linki we wpisach bloga, które w obecnym sklepie prowadzą do 404
+  ['/rashguardy-dlugi-rekaw/', '/rashguardy/dlugi-rekaw/'],
+  ['/przewodnik-po-odziezie-do-mma/', '/najlepsza-odziez-do-mma-co-wybrac/'],
   ...collections.flatMap((c) => c.old.map((o) => [o, `/${c.path}/`])),
 ]);
+const LIVE_ONLY = ['/pomoc/'];
 export function fixHtml(html = ''): string {
   return html
     .replace(/<p>\s*(<(img|video)>\s*(<\/video>)?\s*)+<\/p>/g, '')
     .replace(/<(img|video)>(\s*<\/video>)?/g, '')
     .replace(/href="(\/[^"]*)"/g, (m, h: string) => {
       const [path, hash = ''] = h.split('#');
-      if (path.startsWith('/wp-content/')) return `href="https://gymcompression.pl${h}"`;
+      // Strona, której prototyp jeszcze nie ma, zostaje w obecnym sklepie
+      if (path.startsWith('/wp-content/') || LIVE_ONLY.includes(path)) return `href="https://gymcompression.pl${h}"`;
       const target = OLD_TO_NEW[path] || (path.startsWith('/product-category/') ? '/sklep/' : path);
       const prev = process.env.PREVIEW === '1';
       const clean = target.replace(/^\/|\/$/g, '');
@@ -37,7 +42,10 @@ export function fixHtml(html = ''): string {
 
 export const products = (productsRaw as Product[]).map((p) => ({ ...p, ...productOverrides[p.slug], descHtml: fixHtml(p.descHtml) })).sort((a, b) => b.id - a.id);
 export const categories = (categoriesRaw as Category[]).map((c) => ({ ...c, descHtml: fixHtml(c.descHtml) }));
-export const posts = postsRaw as { title: string; url: string; date: string; excerpt: string }[];
+export interface Post { id: number; date: string; modified: string; slug: string; url: string; title: string; excerpt: string; image: { src: string; w: number; h: number; alt: string; original: string } | null; html: string }
+// Wpisy bloga (scripts/fetch-posts.mjs). Adresy jak w obecnym sklepie: /<slug>/.
+export const posts = (postsRaw as Post[]).map((p) => ({ ...p, html: fixHtml(p.html) })).sort((a, b) => b.date.localeCompare(a.date));
+export const postPath = (p: { slug: string }) => p.slug;
 export const pages = Object.fromEntries(Object.entries(pagesRaw as Record<string, { title: string; html: string; seoDesc: string }>).map(([k, v]) => [k, { ...v, html: fixHtml(v.html) }]));
 export const meta = metaRaw as { fixture?: boolean; fetchedAt?: string };
 export const isPreview = import.meta.env.PREVIEW === '1' || process.env.PREVIEW === '1';

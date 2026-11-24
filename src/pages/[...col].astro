@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import ProductCard from '../components/ProductCard.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import SetCompare from '../components/SetCompare.astro';
 import { collections, type Collection } from '../data/catalog';
 import { inCollection, catBySlug, trail, href as hrefPl, abs, productPath } from '../lib/shop';
 import { langOf, t, tf, pname, lp } from '../i18n';
@@ -40,6 +41,8 @@ const chips = children.length ? children : siblings;
       </nav>
     )}
   </header>
+
+  {c.path.startsWith('zestawy-kompresyjne') && <div class="wrap" style="padding-bottom:var(--s-5)"><SetCompare open={c.path === 'zestawy-kompresyjne'} /></div>}
 
   <div class="wrap plp" data-plp>
     <div class="toolbar">

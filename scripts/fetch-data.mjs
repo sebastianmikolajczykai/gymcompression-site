@@ -5,6 +5,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
 import { parse } from 'node-html-parser';
+import { fetchPosts } from './fetch-posts.mjs';
 
 const ORIGIN = 'https://gymcompression.pl';
 const ROOT = path.resolve(new URL('..', import.meta.url).pathname);
@@ -184,15 +185,9 @@ async function main() {
     } catch (e) { console.warn('strona', slug, e.message); }
   }
 
-  // 5. Blog: tytuły, linki, daty, zajawki (do sekcji Poradnik i mapy przekierowań)
+  // 5. Blog: treść, daty, zajawki i zdjęcia wpisów (strony poradnika i mapa przekierowań)
   let posts = [];
-  try {
-    for (let page = 1; page < 5; page++) {
-      const batch = await get(`${ORIGIN}/wp-json/wp/v2/posts?per_page=100&page=${page}&_fields=id,date,slug,link,title,excerpt`, 'json');
-      posts = posts.concat(batch.map((b) => ({ id: b.id, date: b.date, slug: b.slug, url: b.link.replace(ORIGIN, ''), title: decode(b.title.rendered), excerpt: decode(b.excerpt.rendered) })));
-      if (batch.length < 100) break;
-    }
-  } catch (e) { console.warn('blog', e.message); }
+  try { posts = await fetchPosts(); } catch (e) { console.warn('blog', e.message); }
 
   // 6. Logo i wszystkie stare adresy z sitemap
   const home = parse(await get(`${ORIGIN}/`));

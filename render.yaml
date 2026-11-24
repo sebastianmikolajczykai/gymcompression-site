@@ -16,3 +16,65 @@ services:
       - path: /img/*
         name: Cache-Control
         value: public, max-age=31536000, immutable
+    # Przekierowania starych adresów sklepu (ta sama lista co /przekierowania-301.csv)
+    routes:
+      - type: redirect
+        source: /shop/
+        destination: /sklep/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/
+        destination: /sklep/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/
+        destination: /odziez-kompresyjna-meska/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/zestawy-kompresyjne-meskie/
+        destination: /zestawy-kompresyjne/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/zestawy-kompresyjne-meskie/zestawy-kompresyjne-meskie-2w1/
+        destination: /zestawy-kompresyjne/2w1/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/zestawy-kompresyjne-meskie/zestawy-kompresyjne-meskie-3w1/
+        destination: /zestawy-kompresyjne/3w1/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/zestawy-kompresyjne-meskie/zestawy-kompresyjne-meskie-4w1/
+        destination: /zestawy-kompresyjne/4w1/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/zestawy-kompresyjne-meskie/zestawy-kompresyjne-meskie-5w1/
+        destination: /zestawy-kompresyjne/5w1/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/zestawy-kompresyjne-meskie/zestawy-kompresyjne-meskie-7w1/
+        destination: /zestawy-kompresyjne/7w1/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/rashguardy-dlugi-rekaw/
+        destination: /rashguardy/dlugi-rekaw/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/rashguardy-krotki-rekaw/
+        destination: /rashguardy/krotki-rekaw/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/legginsy/
+        destination: /legginsy-kompresyjne/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/spodenki/
+        destination: /spodenki-kompresyjne/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-meska/bluzy/
+        destination: /bluzy-kompresyjne/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-damska/
+        destination: /odziez-kompresyjna-damska/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-damska/zestawy-kompresyjne-damskie/
+        destination: /odziez-kompresyjna-damska/
+      - type: redirect
+        source: /product-category/odziez-kompresyjna/odziez-damska/zestawy-kompresyjne-damskie/zestawy-kompresyjne-damskie-5w1/
+        destination: /odziez-kompresyjna-damska/
+      - type: redirect
+        source: /tabela-rozmiarow-2/
+        destination: /tabela-rozmiarow/
+      - type: redirect
+        source: /cart/
+        destination: /koszyk/
+      - type: redirect
+        source: /category/uncategorized/
+        destination: /blog/

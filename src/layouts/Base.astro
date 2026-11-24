@@ -15,8 +15,9 @@ interface Props {
   jsonld?: object[];
   ogType?: string;
   activeNav?: string;
+  plOnly?: boolean;        // strona tylko po polsku (blog): przełącznik języka prowadzi na stronę główną
 }
-const { title, description, path, image, noindex, jsonld = [], ogType = 'website', activeNav } = Astro.props;
+const { title, description, path, image, noindex, jsonld = [], ogType = 'website', activeNav, plOnly } = Astro.props;
 const L = langOf(Astro.url.pathname);
 const langPath = (l: string) => (l === 'pl' ? path : path ? `${l}/${path}` : l);
 const canonical = abs(langPath(L));
@@ -76,7 +77,7 @@ const org = {
       </div>
     </div>
   )}
-  <Header active={activeNav} path={path} />
+  <Header active={activeNav} path={plOnly ? '' : path} />
   <main id="main"><slot /></main>
   <Footer />
   <script is:inline>

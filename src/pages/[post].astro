@@ -1,0 +1,89 @@
+---
+// Pojedynczy wpis poradnika albo strona informacyjna (regulamin, dostawa, kontakt…) pod tym samym adresem co w obecnym sklepie: /<slug>/.
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { posts, pages, postPath, href, abs, type Post } from '../lib/shop';
+import { byPath } from '../data/catalog';
+import { breadcrumbLd } from '../lib/schema';
+
+export function getStaticPaths() {
+  return [
+    ...posts.map((p, i) => ({ params: { post: p.slug }, props: { p, newer: posts[i - 1], older: posts[i + 1] } })),
+    ...Object.entries(pages).map(([slug, info]) => ({ params: { post: slug }, props: { info: { slug, ...info } } })),
+  ];
+}
+const { newer, older, info } = Astro.props as { p?: Post; newer?: Post; older?: Post; info?: { slug: string; title: string; html: string; seoDesc: string } };
+// Strona informacyjna używa tego samego szablonu bez elementów wpisu.
+const p = (Astro.props.p ?? { id: 0, date: '', modified: '', slug: info!.slug, url: `/${info!.slug}/`, title: info!.title, excerpt: info!.seoDesc, image: null, html: info!.html }) as Post;
+const crumbs = info ? [{ name: 'Strona główna', path: '' }, { name: p.title, path: postPath(p) }] : [{ name: 'Strona główna', path: '' }, { name: 'Poradnik', path: 'blog' }, { name: p.title, path: postPath(p) }];
+const fmt = (d: string) => new Date(d).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' });
+const cut = (s: string, n: number) => (s.length > n ? s.slice(0, n).replace(/\s+\S*$/, '') + '…' : s);
+const title = `${p.title} | Gym Compression`.length <= 65 ? `${p.title} | Gym Compression` : p.title;
+// Podobne wpisy: wspólne słowa w tytule (bez krótkich słów), przy remisie nowsze.
+const words = (s: string) => new Set(s.toLowerCase().replace(/[^\p{L}\d ]/gu, ' ').split(/\s+/).filter((w) => w.length > 4));
+const mine = words(p.title);
+const related = info ? [] : posts.filter((x) => x.slug !== p.slug).map((x) => ({ x, score: [...words(x.title)].filter((w) => mine.has(w)).length })).sort((a, b) => b.score - a.score).slice(0, 3).map((r) => r.x);
+const shop = ['zestawy-kompresyjne', 'rashguardy', 'legginsy-kompresyjne', 'spodenki-kompresyjne', 'bluzy-kompresyjne'].map((x) => byPath(x)!);
+const article = {
+  '@context': 'https://schema.org', '@type': 'BlogPosting', '@id': `${abs(postPath(p))}#article`,
+  headline: p.title, description: p.excerpt, datePublished: p.date, dateModified: p.modified || p.date, inLanguage: 'pl',
+  mainEntityOfPage: abs(postPath(p)), ...(p.image ? { image: [p.image.original] } : {}),
+  author: { '@id': 'https://gymcompression.pl/#organization' }, publisher: { '@id': 'https://gymcompression.pl/#organization' },
+};
+---
+<Base title={title} description={cut(p.excerpt, 158)} path={postPath(p)} image={p.image?.original} ogType={info ? 'website' : 'article'} activeNav={info ? undefined : 'blog'} plOnly jsonld={info ? [breadcrumbLd(crumbs)] : [breadcrumbLd(crumbs), article]}>
+  <Breadcrumbs items={crumbs} />
+  <article class="wrap art">
+    <header class="art__head">
+      {!info && <p class="eyebrow"><time datetime={p.date.slice(0, 10)}>{fmt(p.date)}</time></p>}
+      <h1>{p.title}</h1>
+      {!info && <p class="art__lead">{p.excerpt}</p>}
+    </header>
+    {p.image && <img class="art__img" src={p.image.src} width={p.image.w} height={p.image.h} alt={p.image.alt} fetchpriority="high" />}
+    <div class="art__cols">
+      <div class="prose" set:html={p.html} />
+      <aside class="art__side" aria-label="Sklep">
+        <p class="eyebrow">Zobacz w sklepie</p>
+        <ul>{shop.map((c) => <li><a class="link-arrow" href={href(c.path)}>{c.h1}</a></li>)}</ul>
+        <a class="btn btn--block" href={href('tabela-rozmiarow')}>Dobierz rozmiar</a>
+      </aside>
+    </div>
+    {!info && (
+    <nav class="art__nav" aria-label="Inne artykuły">
+      {older ? <a href={href(postPath(older))}><span class="eyebrow">Starszy artykuł</span><strong>{older.title}</strong></a> : <span></span>}
+      {newer ? <a class="next" href={href(postPath(newer))}><span class="eyebrow">Nowszy artykuł</span><strong>{newer.title}</strong></a> : <span></span>}
+    </nav>
+    )}
+  </article>
+  {!info && (
+  <section class="section section--chalk" aria-labelledby="rel-h">
+    <div class="wrap">
+      <div class="section__head"><h2 id="rel-h">Podobne artykuły</h2><a class="link-arrow" href={href('blog')}>Wszystkie artykuły</a></div>
+      <div class="rel">
+        {related.map((r) => <a class="rel__i" href={href(postPath(r))}><span class="eyebrow">{fmt(r.date)}</span><h3>{r.title}</h3><p>{cut(r.excerpt, 150)}</p></a>)}
+      </div>
+    </div>
+  </section>
+  )}
+</Base>
+<style>
+  .art { display: grid; gap: var(--s-6); padding-bottom: var(--s-8); }
+  .art__head { display: grid; gap: var(--s-4); max-width: 60rem; }
+  .art__head h1 { text-transform: none; font-size: var(--t-2xl); line-height: 1.05; }
+  .art__lead { font-size: var(--t-lg); color: var(--graphite); max-width: 68ch; }
+  .art__img { width: 100%; max-width: 60rem; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 14px; background: var(--chalk); }
+  .art__cols { display: grid; grid-template-columns: minmax(0, 68ch) minmax(14rem, 18rem); gap: var(--s-7); align-items: start; }
+  .art__cols :global(.prose) { font-size: 1.0625rem; }
+  .art__cols :global(.prose h2) { font-size: var(--t-xl); margin-top: var(--s-4); }
+  .art__cols :global(.prose a) { color: var(--tape); }
+  .art__side { position: sticky; top: 5.5rem; display: grid; gap: var(--s-4); padding: var(--s-5); border: 1px solid var(--line); border-radius: 14px; }
+  .art__side ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+  .art__nav { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-5); border-top: 1px solid var(--line); padding-top: var(--s-5); }
+  .art__nav a { display: grid; gap: .35rem; text-decoration: none; }
+  .art__nav .next { text-align: right; }
+  .rel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-5); }
+  .rel__i { display: grid; gap: var(--s-3); align-content: start; padding-top: var(--s-4); border-top: 2px solid var(--ink); text-decoration: none; }
+  .rel__i p { color: var(--muted); font-size: var(--t-sm); }
+  @media (max-width: 900px) { .art__cols { grid-template-columns: 1fr; gap: var(--s-6); } .art__side { position: static; } .rel { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .art__nav { grid-template-columns: 1fr; } .art__nav .next { text-align: left; } }
+</style>
