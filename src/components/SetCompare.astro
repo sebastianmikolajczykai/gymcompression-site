@@ -1,32 +1,12 @@
 ---
-// Porównanie zestawów 2w1–7w1: co oznacza liczba i jakie elementy są w komplecie.
-// Tabela liczy się z danych produktów (setItems), więc zmienia się razem z ofertą.
+// Krótkie wyjaśnienie zestawów 2w1–7w1: co oznacza liczba i jedno zdanie o każdym zestawie z ceną i linkiem.
 import { byPath } from '../data/catalog';
 import { inCollection, href as hrefPl, pln as plnPl } from '../lib/shop';
-import { langOf, t, tf, plural } from '../i18n';
+import { langOf, t, plural } from '../i18n';
 const L = langOf(Astro.url.pathname);
 const href = (p: string) => hrefPl(p, L);
 const { open = false } = Astro.props as { open?: boolean };
 
-const ROWS = [
-  { key: 'short', label: 'Koszulka lub rashguard z krótkim rękawem' },
-  { key: 'long', label: 'Rashguard z długim rękawem' },
-  { key: 'shorts', label: 'Spodenki sportowe' },
-  { key: 'legs', label: 'Legginsy (spodnie kompresyjne)' },
-  { key: 'hoodie', label: 'Bluza' },
-  { key: 'tank', label: 'Bokserka sportowa' },
-  { key: 'cshorts', label: 'Spodenki kompresyjne' },
-] as const;
-function classify(item: string): string {
-  const s = item.toLowerCase();
-  if (s.includes('bluza')) return 'hoodie';
-  if (s.includes('bokserka')) return 'tank';
-  if (s.includes('długim rękawem')) return 'long';
-  if (s.includes('spodenki kompresyjne')) return 'cshorts';
-  if (/^(spodenki|szorty)/.test(s)) return 'shorts';
-  if (s.includes('legginsy') || s.includes('spodnie kompresyjne')) return 'legs';
-  return 'short';
-}
 const SUMMARY: Record<string, string> = {
   '2w1': 'Góra i spodenki. Najprostszy start z kompresją.',
   '3w1': 'Góra, spodenki i legginsy.',
@@ -37,9 +17,7 @@ const SUMMARY: Record<string, string> = {
 const sets = ['2w1', '3w1', '4w1', '5w1', '7w1'].map((n) => {
   const col = byPath(`zestawy-kompresyjne/${n}`)!;
   const items = inCollection(col);
-  const has: Record<string, number> = {};
-  for (const p of items) for (const k of new Set(p.setItems.map(classify))) has[k] = (has[k] || 0) + 1;
-  return { n, k: Number(n[0]), col, count: items.length, has, from: items.length ? Math.min(...items.map((p) => p.price)) : 0 };
+  return { n, col, count: items.length, from: items.length ? Math.min(...items.map((p) => p.price)) : 0 };
 }).filter((s) => s.count);
 const label = (n: string) => (L === 'en' ? n.replace('w', '-in-') : L === 'uk' ? n.replace('w', ' в ') : n);
 ---
@@ -47,36 +25,17 @@ const label = (n: string) => (L === 'en' ? n.replace('w', '-in-') : L === 'uk' ?
   <summary><span class="cmp__q">{t(L, 'Co znaczy 2w1, 3w1, 5w1? Porównaj zestawy')}</span><span class="cmp__ic" aria-hidden="true"></span></summary>
   <div class="cmp__body">
     <p class="cmp__lead">{t(L, 'Liczba przed „w1” to liczba elementów w komplecie: 2w1 to dwa elementy, 5w1 to pięć. Każdy element możesz nosić osobno albo razem z pozostałymi.')}</p>
-    <div class="cmp__scroll" role="region" aria-label={t(L, 'Porównanie zestawów')} tabindex="0">
-      <table class="cmp__t">
-        <thead>
-          <tr>
-            <th scope="col">{t(L, 'W zestawie')}</th>
-            {sets.map((s) => <th scope="col"><a href={href(s.col.path)}>{label(s.n)}</a></th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {ROWS.filter((r) => sets.some((s) => s.has[r.key])).map((r) => (
-            <tr>
-              <th scope="row">{t(L, r.label)}</th>
-              {sets.map((s) => {
-                const c = s.has[r.key] || 0;
-                return <td class={c ? 'y' : 'n'}>{c === s.count ? <span class="tick" aria-label={t(L, 'tak')}>✓</span> : c ? <span class="some">{tf(L, 'w {a} z {b} wzorów', { a: c, b: s.count })}</span> : <span aria-label={t(L, 'nie')}>–</span>}</td>;
-              })}
-            </tr>
-          ))}
-          <tr class="cmp__sum">
-            <th scope="row">{t(L, 'W skrócie')}</th>
-            {sets.map((s) => <td>{t(L, SUMMARY[s.n])}</td>)}
-          </tr>
-          <tr class="cmp__buy">
-            <th scope="row">{t(L, 'Cena')}</th>
-            {sets.map((s) => <td><span class="mono">{t(L, 'od')} {plnPl(s.from, L)}</span><a class="link-arrow" href={href(s.col.path)}>{s.count} {plural(L, s.count, ['wzór', 'wzory', 'wzorów'])}</a></td>)}
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="cmp__note">{t(L, 'Dokładny skład każdego wzoru jest na stronie produktu w sekcji „W zestawie”.')}</p>
+    <ul class="cmp__list">
+      {sets.map((s) => (
+        <li>
+          <a href={href(s.col.path)}>
+            <strong class="cmp__n">{label(s.n)}</strong>
+            <span class="cmp__d">{t(L, SUMMARY[s.n])}</span>
+            <span class="cmp__p"><span class="mono">{t(L, 'od')} {plnPl(s.from, L)}</span><span class="link-arrow">{s.count} {plural(L, s.count, ['wzór', 'wzory', 'wzorów'])}</span></span>
+          </a>
+        </li>
+      ))}
+    </ul>
   </div>
 </details>
 <style>
@@ -90,20 +49,17 @@ const label = (n: string) => (L === 'en' ? n.replace('w', '-in-') : L === 'uk' ?
   .cmp[open] .cmp__ic::after { transform: translate(-50%, -50%); }
   .cmp__body { display: grid; gap: var(--s-4); padding: 0 var(--s-5) var(--s-5); }
   .cmp__lead { max-width: 70ch; color: var(--graphite); }
-  .cmp__scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-inline: calc(-1 * var(--s-5)); padding-inline: var(--s-5); }
-  .cmp__t { border-collapse: collapse; width: 100%; min-width: 42rem; font-size: var(--t-sm); }
-  .cmp__t th, .cmp__t td { padding: .7rem .6rem; border-top: 1px solid var(--line); text-align: center; vertical-align: top; }
-  .cmp__t thead th { border-top: 0; font: 800 var(--t-lg)/1 var(--f-display); font-stretch: 112%; }
-  .cmp__t thead th:first-child { font: 600 var(--t-xs)/1.2 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); vertical-align: bottom; }
-  .cmp__t thead a { text-decoration: none; }
-  .cmp__t tbody th { text-align: left; font-weight: 600; min-width: 11rem; }
-  .cmp__t th:first-child { position: sticky; left: 0; background: var(--paper); text-align: left; }
-  .cmp__t .tick { color: var(--ok); font-weight: 800; font-size: 1.1rem; }
-  .cmp__t .n { color: var(--line); }
-  .cmp__t .some { color: var(--muted); font-size: var(--t-xs); }
-  .cmp__sum td { color: var(--graphite); text-align: left; min-width: 9rem; }
-  .cmp__buy td { display: table-cell; }
-  .cmp__buy td .mono { display: block; font-weight: 600; margin-bottom: .3rem; }
-  .cmp__note { color: var(--muted); font-size: var(--t-sm); }
-  @media (max-width: 560px) { .cmp__t { min-width: 34rem; } .cmp__t tbody th { min-width: 8.5rem; } .cmp__t th, .cmp__t td { padding: .6rem .4rem; } .cmp__sum td { min-width: 7.5rem; } .cmp summary { font-size: var(--t-md); padding: var(--s-4); } .cmp__body { padding: 0 var(--s-4) var(--s-4); } .cmp__scroll { margin-inline: calc(-1 * var(--s-4)); padding-inline: var(--s-4); } }
+  .cmp__list { list-style: none; margin: 0; padding: 0; }
+  .cmp__list li { border-top: 1px solid var(--line); }
+  .cmp__list a { display: grid; grid-template-columns: 4.5rem 1fr auto; gap: var(--s-4); align-items: center; padding: var(--s-4) 0; text-decoration: none; }
+  .cmp__n { font: 800 var(--t-xl)/1 var(--f-display); font-stretch: 112%; }
+  .cmp__d { color: var(--graphite); }
+  .cmp__p { display: grid; gap: .2rem; justify-items: end; font-size: var(--t-sm); white-space: nowrap; }
+  .cmp__p .mono { font-weight: 600; }
+  .cmp__list a:hover .cmp__n { color: var(--tape); }
+  @media (max-width: 560px) {
+    .cmp summary { font-size: var(--t-md); padding: var(--s-4); } .cmp__body { padding: 0 var(--s-4) var(--s-4); }
+    .cmp__list a { grid-template-columns: 3.5rem 1fr; gap: .4rem var(--s-3); }
+    .cmp__p { grid-column: 2; justify-items: start; grid-auto-flow: column; justify-content: start; gap: var(--s-4); }
+  }
 </style>
