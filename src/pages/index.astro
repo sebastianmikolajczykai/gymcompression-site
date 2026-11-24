@@ -3,8 +3,9 @@ import Base from '../layouts/Base.astro';
 import ProductCard from '../components/ProductCard.astro';
 import SizeAdvisor from '../components/SizeAdvisor.astro';
 import SizeTable from '../components/SizeTable.astro';
+import SetCompare from '../components/SetCompare.astro';
 import { byPath } from '../data/catalog';
-import { products, inCollection, href as hrefPl, pln as plnPl, imgSrc, srcset, posts, productPath } from '../lib/shop';
+import { products, inCollection, href as hrefPl, pln as plnPl, imgSrc, srcset, posts, productPath, postPath } from '../lib/shop';
 import { langOf, t, plural, pname, HTML_LANG, lp } from '../i18n';
 import { abs } from '../lib/shop';
 const L = langOf(Astro.url.pathname);
@@ -78,6 +79,7 @@ const latestPosts = L === 'pl' ? posts.slice(0, 3) : [];
           </li>
         ))}
       </ol>
+      <div style="margin-top:var(--s-5)"><SetCompare /></div>
     </div>
   </section>
 
@@ -135,9 +137,9 @@ const latestPosts = L === 'pl' ? posts.slice(0, 3) : [];
   {latestPosts.length > 0 && (
     <section class="section" aria-labelledby="blog-h">
       <div class="wrap">
-        <div class="section__head"><h2 id="blog-h">Poradnik</h2><a class="link-arrow" href="https://gymcompression.pl/blog/">Wszystkie artykuły</a></div>
+        <div class="section__head"><h2 id="blog-h">Poradnik</h2><a class="link-arrow" href={hrefPl('blog')}>Wszystkie artykuły</a></div>
         <div class="posts">
-          {latestPosts.map((p) => <a class="post" href={`https://gymcompression.pl${p.url}`}><span class="eyebrow">{new Date(p.date).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })}</span><h3>{p.title}</h3><p>{p.excerpt.slice(0, 170)}{p.excerpt.length > 170 ? '…' : ''}</p></a>)}
+          {latestPosts.map((p) => <a class="post" href={hrefPl(postPath(p))}><span class="eyebrow">{new Date(p.date).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })}</span><h3>{p.title}</h3><p>{p.excerpt.slice(0, 170)}{p.excerpt.length > 170 ? '…' : ''}</p></a>)}
         </div>
       </div>
     </section>

@@ -22,6 +22,7 @@ const count = (p: string) => inCollection(byPath(p)!).length;
           )}
         </div>
       ))}
+      <div><a class="top" href={hrefPl('blog')} hreflang="pl" aria-current={active === 'blog' ? 'page' : undefined}>{t(L, 'Poradnik')}</a></div>
     </nav>
     <div class="tools">
       <nav class="lang" aria-label={t(L, 'Język')}>{LANGS.map((l) => <a href={hrefPl(path === '404' ? '' : path, l)} hreflang={l} lang={l} aria-current={l === L ? 'true' : undefined} title={LANG_NAME[l]}>{LANG_LABEL[l]}</a>)}</nav>
@@ -54,6 +55,7 @@ const count = (p: string) => inCollection(byPath(p)!).length;
         </>
       ))}
       <a href={href('tabela-rozmiarow')}>{t(L, 'Tabela rozmiarów')}</a>
+      <a href={hrefPl('blog')} hreflang="pl">{t(L, 'Poradnik')}</a>
     </nav>
     <nav class="lang lang--drawer" aria-label={t(L, 'Język')}>{LANGS.map((l) => <a href={hrefPl(path === '404' ? '' : path, l)} hreflang={l} lang={l} aria-current={l === L ? 'true' : undefined} title={LANG_NAME[l]}>{LANG_LABEL[l]}</a>)}</nav>
   </div>
