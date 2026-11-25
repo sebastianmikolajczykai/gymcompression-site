@@ -1,0 +1,226 @@
+{
+ "legginsy-gym-compression-eclipse-grey": {
+  "base": "allegro-legginsy-gym-compression-eclipse-grey",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Legginsy Gym Compression Eclipse Grey",
+  "original": "https://a.allegroimg.com/original/112a81/281dc8154887a959ca3b2a61793a/legginsy-gym-compression-eclipse-grey",
+  "allegroOffer": "18076513544"
+ },
+ "spodenki-z-legginsami-gym-compression": {
+  "base": "allegro-spodenki-z-legginsami-gym-compression",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Spodenki z legginsami Gym Compression",
+  "original": "https://a.allegroimg.com/original/119f14/4276eb31424eaeff5377009ae8e9/spodenki-z-legginsami-gym-compression",
+  "allegroOffer": "17974330389"
+ },
+ "bluza-kompresyjna-gym-compression-blue-shadow": {
+  "base": "allegro-bluza-kompresyjna-gym-compression-blue-shadow",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Bluza kompresyjna Gym Compression Blue Shadow",
+  "original": "https://a.allegroimg.com/original/1127b2/e4a6664b41b1a457d87a139f935b/bluza-kompresyjna-gym-compression-blue-shadow",
+  "allegroOffer": "18076217377"
+ },
+ "legginsy-gym-compression-blue-shadow": {
+  "base": "allegro-legginsy-gym-compression-blue-shadow",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Legginsy Gym Compression Blue Shadow",
+  "original": "https://a.allegroimg.com/original/110212/6e15f269463ea7fd110b33dd5cd9/legginsy-gym-compression-blue-shadow",
+  "allegroOffer": "18076514282"
+ },
+ "bluza-gym-compression-urban-grey": {
+  "base": "allegro-bluza-gym-compression-urban-grey",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Bluza Gym Compression Urban Grey",
+  "original": "https://a.allegroimg.com/original/11d2b2/2030c01e49e7858c3a90c114042c/bluza-gym-compression-urban-grey",
+  "allegroOffer": "18076216109"
+ },
+ "legginsy-gym-compression-prime-black": {
+  "base": "allegro-legginsy-gym-compression-prime-black",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Legginsy Gym Compression Prime Black",
+  "original": "https://a.allegroimg.com/original/1187ca/7779e33845d98863bd6f838a514b/legginsy-gym-compression-prime-black",
+  "allegroOffer": "18076512682"
+ },
+ "legginsy-gym-compression-shadow-matrix": {
+  "base": "allegro-legginsy-gym-compression-shadow-matrix",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Legginsy Gym Compression Shadow Matrix",
+  "original": "https://a.allegroimg.com/original/1137b9/43dcc2a641a49d7c6540942d0cc8/legginsy-gym-compression-shadow-matrix",
+  "allegroOffer": "18076015817"
+ },
+ "rashguard-z-krotkim-rekawem-gym-compression-active-graphite": {
+  "base": "allegro-rashguard-z-krotkim-rekawem-gym-compression-active-graphite",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z krótkim rękawem Gym Compression Active Graphite",
+  "original": "https://a.allegroimg.com/original/117f4e/bd9ff6bb4e24abde70bdc57547fa/rashguard-z-krotkim-rekawem-gym-compression-active-graphite",
+  "allegroOffer": "18076343104"
+ },
+ "rashguard-z-krotkim-rekawem-gym-compression-prime-green": {
+  "base": "allegro-rashguard-z-krotkim-rekawem-gym-compression-prime-green",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z krótkim rękawem Gym Compression Prime Green",
+  "original": "https://a.allegroimg.com/original/11e38b/ae76ff514ea68a47fd33c38fab3b/rashguard-z-krotkim-rekawem-gym-compression-prime-green",
+  "allegroOffer": "17900953228"
+ },
+ "rashguard-z-krotkim-rekawem-gym-compression-prime-black": {
+  "base": "allegro-rashguard-z-krotkim-rekawem-gym-compression-prime-black",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z krótkim rękawem Gym Compression Prime Black",
+  "original": "https://a.allegroimg.com/original/11dc1b/d029191747cca1363a61042113ac/rashguard-z-krotkim-rekawem-gym-compression-prime-black",
+  "allegroOffer": "17975727594"
+ },
+ "rashguard-z-krotkim-rekawem-gym-compression-air-mesh-black": {
+  "base": "allegro-rashguard-z-krotkim-rekawem-gym-compression-air-mesh-black",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z krótkim rękawem Gym Compression Air Mesh Black",
+  "original": "https://a.allegroimg.com/original/117183/379fccf44ae295017bdb92e8ab4b/rashguard-z-krotkim-rekawem-gym-compression-air-mesh-black",
+  "allegroOffer": "17975962542"
+ },
+ "rashguard-z-krotkim-rekawem-gym-compression-blue-shadow": {
+  "base": "allegro-rashguard-z-krotkim-rekawem-gym-compression-blue-shadow",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z krótkim rękawem Gym Compression Blue Shadow",
+  "original": "https://a.allegroimg.com/original/116fbb/788cdaea41128b69d1aafd8f24a2/rashguard-z-krotkim-rekawem-gym-compression-blue-shadow",
+  "allegroOffer": "18076344117"
+ },
+ "rashguard-z-kapturem-gym-compression-streed-hood": {
+  "base": "allegro-rashguard-z-kapturem-gym-compression-streed-hood",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z kapturem Gym Compression Streed Hood",
+  "original": "https://a.allegroimg.com/original/119c3b/2004b8a14148b39f9a10b609dfba/rashguard-z-kapturem-gym-compression-streed-hood",
+  "allegroOffer": "17975777839"
+ },
+ "rashguard-z-dlugim-rekawem-gym-compression-blue-shadow": {
+  "base": "allegro-rashguard-z-dlugim-rekawem-gym-compression-blue-shadow",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z długim rękawem Gym Compression Blue Shadow",
+  "original": "https://a.allegroimg.com/original/111423/af5d797b46e0b22a602cf9a4f5af/rashguard-z-dlugim-rekawem-gym-compression-blue-shadow",
+  "allegroOffer": "18076420281"
+ },
+ "rashguard-z-dlugim-rekawem-gym-compression-eclipse-grey": {
+  "base": "allegro-rashguard-z-dlugim-rekawem-gym-compression-eclipse-grey",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z długim rękawem Gym Compression Eclipse Grey",
+  "original": "https://a.allegroimg.com/original/1106e3/7dd5a9a2414283d9d62e8e4624c6/rashguard-z-dlugim-rekawem-gym-compression-eclipse-grey",
+  "allegroOffer": "18076419792"
+ },
+ "rashguard-z-dlugim-rekawem-gym-compression-shadow-matrix": {
+  "base": "allegro-rashguard-z-dlugim-rekawem-gym-compression-shadow-matrix",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z długim rękawem Gym Compression Shadow Matrix",
+  "original": "https://a.allegroimg.com/original/11c30e/7dd0a8c54fcb9d0b4fd59a2ff7f9/rashguard-z-dlugim-rekawem-gym-compression-shadow-matrix",
+  "allegroOffer": "18076165348"
+ },
+ "rashguard-z-dlugim-rekawem-gym-compression-blackwhite": {
+  "base": "allegro-rashguard-z-dlugim-rekawem-gym-compression-blackwhite",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z długim rękawem Gym Compression Black & White",
+  "original": "https://a.allegroimg.com/original/11500e/155da354437cad2d81cd2f147c74/rashguard-z-dlugim-rekawem-gym-compression-blackwhite",
+  "allegroOffer": "17974292958"
+ },
+ "rashguard-z-dlugim-rekawem-gym-compression-olive-black": {
+  "base": "allegro-rashguard-z-dlugim-rekawem-gym-compression-olive-black",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z długim rękawem Gym Compression Olive Black",
+  "original": "https://a.allegroimg.com/original/11da31/2a2063db487a9bc0d8f3e41221c6/rashguard-z-dlugim-rekawem-gym-compression-olive-black",
+  "allegroOffer": "18075672429"
+ },
+ "rashguard-z-krotkim-rekawem-gym-compression-black-pixel": {
+  "base": "allegro-rashguard-z-krotkim-rekawem-gym-compression-black-pixel",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z krótkim rękawem Gym Compression Black Pixel",
+  "original": "https://a.allegroimg.com/original/119a6e/b4f980514b76928cce7636fe331e/rashguard-z-krotkim-rekawem-gym-compression-black-pixel",
+  "allegroOffer": "18076345059"
+ },
+ "bluza-gym-compression-black-pixel": {
+  "base": "allegro-bluza-gym-compression-black-pixel",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Bluza Gym Compression Black Pixel",
+  "original": "https://a.allegroimg.com/original/11495e/8b5ea40f4748bddb49e4303d3329/bluza-gym-compression-black-pixel",
+  "allegroOffer": "18076217555"
+ },
+ "rashguard-z-krotkim-rekawem-gym-compression-shadow-matrix": {
+  "base": "allegro-rashguard-z-krotkim-rekawem-gym-compression-shadow-matrix",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z krótkim rękawem Gym Compression Shadow Matrix",
+  "original": "https://a.allegroimg.com/original/118c82/cdfa9a04494598d7aa9479e3e518/rashguard-z-krotkim-rekawem-gym-compression-shadow-matrix",
+  "allegroOffer": "18076188004"
+ },
+ "rashguard-z-krotkim-rekawem-gym-compression-blackwhite": {
+  "base": "allegro-rashguard-z-krotkim-rekawem-gym-compression-blackwhite",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z krótkim rękawem Gym Compression Black & White",
+  "original": "https://a.allegroimg.com/original/114941/6a8b8e284ae880f4d36b1d084d20/rashguard-z-krotkim-rekawem-gym-compression-blackwhite",
+  "allegroOffer": "17975841054"
+ },
+ "bluza-gym-compression-blackwhite": {
+  "base": "allegro-bluza-gym-compression-blackwhite",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Bluza Gym Compression Black & White",
+  "original": "https://a.allegroimg.com/original/11f4f0/84fd0d7e4ef7ad06dbfc36721dd8/bluza-gym-compression-blackwhite",
+  "allegroOffer": "17974316477"
+ },
+ "bluza-gym-compression-shadow-matrix": {
+  "base": "allegro-bluza-gym-compression-shadow-matrix",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Bluza Gym Compression Shadow Matrix",
+  "original": "https://a.allegroimg.com/original/1164d5/4fb82eab4d25aa816827890eda54/bluza-gym-compression-shadow-matrix",
+  "allegroOffer": "18076078262"
+ },
+ "bluza-gym-compression-olive-black": {
+  "base": "allegro-bluza-gym-compression-olive-black",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Bluza Gym Compression Olive Black",
+  "original": "https://a.allegroimg.com/original/118f34/bdda487d4805849fd372a11e32d5/bluza-gym-compression-olive-black",
+  "allegroOffer": "17976189028"
+ },
+ "rashguard-z-dlugim-rekawem-gym-compression-black-pixel": {
+  "base": "allegro-rashguard-z-dlugim-rekawem-gym-compression-black-pixel",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z długim rękawem Gym Compression Black Pixel",
+  "original": "https://a.allegroimg.com/original/11959f/4035ff23467b837ff7f2b14bc2b4/rashguard-z-dlugim-rekawem-gym-compression-black-pixel",
+  "allegroOffer": "18076421364"
+ },
+ "rashguard-z-krotkim-rekawem-gym-compression-olive-black": {
+  "base": "allegro-rashguard-z-krotkim-rekawem-gym-compression-olive-black",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Rashguard z krótkim rękawem Gym Compression Olive Black",
+  "original": "https://a.allegroimg.com/original/1120d4/ca03ed484d168338d3a98e1122c4/rashguard-z-krotkim-rekawem-gym-compression-olive-black",
+  "allegroOffer": "18075993546"
+ },
+ "bluza-gym-compression-obsidian-black": {
+  "base": "allegro-bluza-gym-compression-obsidian-black",
+  "w": 1440,
+  "h": 1800,
+  "alt": "Bluza Gym Compression Obsidian Black",
+  "original": "https://a.allegroimg.com/original/110b88/e0bbedf043ae83d2d44c42657e03/bluza-gym-compression-obsidian-black",
+  "allegroOffer": "17975872103"
+ }
+}
