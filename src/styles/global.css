@@ -164,8 +164,13 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .lang--drawer { margin: var(--s-5) 0 0; gap: var(--s-2); }
 .lang--drawer a { min-width: 3rem; height: 2.75rem; font-size: .9rem; }
 @media (max-width: 960px) { .tools > .lang { display: none; } }
-/* Wąski desktop: w nagłówku same flagi (kod języka zostaje dla czytników ekranu), żeby pasek się mieścił. */
-@media (min-width: 961px) and (max-width: 1140px) {
-  .tools > .lang a { min-width: 2rem; padding: 0; }
-  .tools > .lang a span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* Wąski desktop (laptopy): wszystko widoczne, tylko ciaśniejsze odstępy, żeby nagłówek mieścił się w ekranie. */
+@media (min-width: 961px) and (max-width: 1200px) {
+  .hdr__in { gap: var(--s-3); }
+  .nav { gap: 0; }
+  .nav a.top { padding: .6rem .5rem; font-size: .95rem; }
+  .tools { gap: 0; }
+  .lang { margin-right: var(--s-1); }
+  .lang a { padding: 0 .3rem; gap: .25rem; }
+  .icon-btn { width: 2.5rem; }
 }
