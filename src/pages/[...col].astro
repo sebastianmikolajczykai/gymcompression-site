@@ -97,6 +97,16 @@ const chips = children.length ? children : siblings;
   .empty { padding: var(--s-7) 0; text-align: center; color: var(--muted); }
   .linkbtn { background: none; border: 0; padding: 0; text-decoration: underline; color: var(--ink); }
   [data-item][hidden] { display: none; }
+  /* Telefon: pasek filtrów nie przykleja się nad produktami i jest niższy. */
+  @media (max-width: 760px) {
+    .toolbar { position: static; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-2) var(--s-3); padding-block: var(--s-2) var(--s-3); }
+    .filters { display: contents; }
+    .sort { grid-row: 1; grid-column: 2; }
+    .sort select { height: 2.25rem; padding: 0 .5rem; }
+    .sizes-f { grid-column: 1 / -1; flex-wrap: nowrap; }
+    .sz { flex: 1; }
+    .sz span { display: grid; min-width: 0; width: 100%; padding: 0 .3rem; }
+  }
 </style>
 <script is:inline>
   (function () {

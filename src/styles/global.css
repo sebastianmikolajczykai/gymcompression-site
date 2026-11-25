@@ -47,6 +47,8 @@ p { margin: 0; }
 .prose { max-width: 68ch; display: grid; gap: var(--s-4); }
 .prose h2, .prose h3 { font-size: var(--t-lg); text-transform: none; font-stretch: 100%; margin-top: var(--s-3); }
 .prose ul { margin: 0; padding-left: 1.2em; display: grid; gap: .3em; }
+.prose pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; font: inherit; }
+.prose { min-width: 0; overflow-wrap: break-word; }
 
 /* Przyciski */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: .6em; min-height: 3.25rem; padding: 0 1.6rem; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--paper); font: 600 var(--t-md)/1 var(--f-body); text-decoration: none; transition: background .15s, color .15s, border-color .15s; }
@@ -95,8 +97,9 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 @media (max-width: 960px) {
   .nav { display: none; }
   .menu-btn { display: inline-grid; }
-  .hdr__in { grid-template-columns: auto 1fr auto; }
+  .hdr__in { grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-3); }
   .hdr__in .logo { justify-self: start; }
+  .tools { justify-self: end; gap: 0; margin-right: -.5rem; }
 }
 
 /* Okruszki */
@@ -110,8 +113,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 @media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 760px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-5) var(--s-3); } }
 .card { position: relative; display: grid; gap: var(--s-3); align-content: start; }
-.card__img { aspect-ratio: 4 / 5; background: var(--chalk); border-radius: 6px; overflow: hidden; }
-.card__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.card__img { aspect-ratio: 4 / 5; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.card__img img { width: 100%; height: 100%; object-fit: contain; transition: transform .5s cubic-bezier(.2,.7,.2,1); }
 .card:hover .card__img img { transform: scale(1.035); }
 .card__body { display: grid; gap: .2rem; }
 .card__kind { font: 500 var(--t-xs)/1.3 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
@@ -139,6 +142,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .size-table thead th { white-space: normal; font-size: var(--t-xs); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 500; }
 .size-table tbody th { font: 800 1.05rem/1 var(--f-display); font-stretch: 112%; }
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+@media (max-width: 480px) { .size-table th, .size-table td { padding: .65rem .4rem; } .size-table th:first-child, .size-table td:first-child { padding-left: 0; } .size-table th:last-child, .size-table td:last-child { padding-right: 0; } }
 
 /* Stopka */
 .ftr { background: var(--ink); color: #c9ced1; padding-block: var(--s-8) var(--s-6); margin-top: var(--s-8); }
