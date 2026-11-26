@@ -1,0 +1,30 @@
+---
+// Krótka informacja o dostawie na karcie produktu i w koszyku (ceny: shipping w catalog.ts).
+import { shipping } from '../data/catalog';
+import { pln, href as hrefPl } from '../lib/shop';
+import { langOf, t } from '../i18n';
+const L = langOf(Astro.url.pathname);
+const { compact = false } = Astro.props as { compact?: boolean };
+---
+<div class:list={['ship', { 'ship--compact': compact }]}>
+  <p class="ship__head">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17.5" cy="17.5" r="1.6"/></svg>
+    <strong>{t(L, 'Darmowa dostawa do Paczkomatu InPost i punktu DPD')}</strong>
+  </p>
+  <p class="ship__sub">{t(L, 'Wysyłka nawet tego samego dnia roboczego.')} <a href={hrefPl('wysylka-i-dostawa')} hreflang="pl">{t(L, 'Szczegóły')}</a></p>
+  {!compact && (
+    <ul class="ship__list">
+      {shipping.map((s) => <li><span>{t(L, s.name)}</span>{s.price === 0 ? <span class="ship__free">{t(L, 'za darmo')}</span> : <span class="mono">{pln(s.price, L)}</span>}</li>)}
+    </ul>
+  )}
+</div>
+<style>
+  .ship { display: grid; gap: .35rem; padding: var(--s-4); border: 1px solid var(--line); border-radius: 10px; background: var(--paper); font-size: var(--t-sm); }
+  .ship__head { display: flex; gap: .55rem; align-items: center; color: var(--ink); }
+  .ship__head svg { flex: none; width: 1.35rem; height: 1.35rem; color: #1a7f4b; }
+  .ship__sub { color: var(--graphite); padding-left: 1.9rem; }
+  .ship__list { list-style: none; margin: .4rem 0 0; padding: .5rem 0 0 1.9rem; border-top: 1px solid var(--line); display: grid; gap: .25rem; color: var(--graphite); }
+  .ship__list li { display: flex; justify-content: space-between; gap: var(--s-3); }
+  .ship__list .mono { color: var(--ink); white-space: nowrap; }
+  .ship__free { color: #1a7f4b; font-weight: 600; white-space: nowrap; }
+</style>

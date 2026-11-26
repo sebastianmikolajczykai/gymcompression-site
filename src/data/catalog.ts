@@ -201,6 +201,15 @@ export const mainNav = [
   { label: 'Bluzy', path: 'bluzy-kompresyjne' },
 ];
 
+// Dostawa: ceny ze strony „Wysyłka i dostawa” obecnego sklepu (gymcompression.pl/wysylka-i-dostawa/, sprawdzone 26.11.2026).
+// Darmowa dostawa do Paczkomatu i punktu DPD bez progu kwotowego (strona nie podaje progu).
+export const shipping = [
+  { name: 'InPost Paczkomat', price: 0 },
+  { name: 'DPD Punkt odbioru', price: 0 },
+  { name: 'Kurier InPost lub DPD', price: 9.99 },
+  { name: 'Za pobraniem (InPost lub DPD)', price: 14.99 },
+];
+
 // Dane firmy z obecnej stopki gymcompression.pl
 export const company = {
   name: 'Gym Compression',
