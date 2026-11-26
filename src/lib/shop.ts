@@ -5,6 +5,8 @@ import pagesRaw from '../data/pages.json';
 import metaRaw from '../data/meta.json';
 import { collections, type Collection } from '../data/catalog';
 import { productOverrides } from '../data/overrides';
+// Zdjęcia na białym tle z aukcji Allegro Daniela (konto Sportodziez_GC), zgoda Michała 25.11.2026. Pierwsze w galerii, stare zostają dalej.
+import allegroImagesRaw from '../data/allegro-images.json';
 
 export interface Img { base: string; w: number; h: number; alt: string; original?: string }
 export interface Product {
@@ -40,7 +42,12 @@ export function fixHtml(html = ''): string {
     });
 }
 
-export const products = (productsRaw as Product[]).map((p) => ({ ...p, ...productOverrides[p.slug], descHtml: fixHtml(p.descHtml) })).sort((a, b) => b.id - a.id);
+const allegroImages = allegroImagesRaw as Record<string, Img>;
+const withAllegro = (p: Product): Img[] => {
+  const a = allegroImages[p.slug];
+  return a ? [{ base: a.base, w: a.w, h: a.h, alt: a.alt, original: a.original }, ...p.images] : p.images;
+};
+export const products = (productsRaw as Product[]).map((p) => ({ ...p, ...productOverrides[p.slug], images: withAllegro(p), descHtml: fixHtml(p.descHtml) })).sort((a, b) => b.id - a.id);
 export const categories = (categoriesRaw as Category[]).map((c) => ({ ...c, descHtml: fixHtml(c.descHtml) }));
 export interface Post { id: number; date: string; modified: string; slug: string; url: string; title: string; excerpt: string; image: { src: string; w: number; h: number; alt: string; original: string } | null; html: string }
 // Wpisy bloga (scripts/fetch-posts.mjs). Adresy jak w obecnym sklepie: /<slug>/.
