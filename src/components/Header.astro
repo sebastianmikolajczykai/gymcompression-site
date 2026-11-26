@@ -2,6 +2,7 @@
 import { mainNav, byPath } from '../data/catalog';
 import { href as hrefPl, inCollection } from '../lib/shop';
 import { langOf, t, LANGS, LANG_LABEL, LANG_NAME } from '../i18n';
+import LangFlag from './LangFlag.astro';
 const { active, path = '' } = Astro.props as { active?: string; path?: string };
 const L = langOf(Astro.url.pathname);
 const href = (p: string) => hrefPl(p, L);
@@ -25,7 +26,7 @@ const count = (p: string) => inCollection(byPath(p)!).length;
       <div><a class="top" href={hrefPl('blog')} hreflang="pl" aria-current={active === 'blog' ? 'page' : undefined}>{t(L, 'Poradnik')}</a></div>
     </nav>
     <div class="tools">
-      <nav class="lang" aria-label={t(L, 'Język')}>{LANGS.map((l) => <a href={hrefPl(path === '404' ? '' : path, l)} hreflang={l} lang={l} aria-current={l === L ? 'true' : undefined} title={LANG_NAME[l]}>{LANG_LABEL[l]}</a>)}</nav>
+      <nav class="lang" aria-label={t(L, 'Język')}>{LANGS.map((l) => <a href={hrefPl(path === '404' ? '' : path, l)} hreflang={l} lang={l} aria-current={l === L ? 'true' : undefined} title={LANG_NAME[l]}><LangFlag lang={l} uid="-h" /><span>{LANG_LABEL[l]}</span></a>)}</nav>
       <a class="icon-btn" href={href('tabela-rozmiarow')} aria-label={t(L, 'Tabela rozmiarów')} title={t(L, 'Tabela rozmiarów')}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 8h18v8H3z"/><path d="M7 8v3M11 8v4M15 8v3M19 8v4"/></svg>
       </a>
@@ -57,6 +58,6 @@ const count = (p: string) => inCollection(byPath(p)!).length;
       <a href={href('tabela-rozmiarow')}>{t(L, 'Tabela rozmiarów')}</a>
       <a href={hrefPl('blog')} hreflang="pl">{t(L, 'Poradnik')}</a>
     </nav>
-    <nav class="lang lang--drawer" aria-label={t(L, 'Język')}>{LANGS.map((l) => <a href={hrefPl(path === '404' ? '' : path, l)} hreflang={l} lang={l} aria-current={l === L ? 'true' : undefined} title={LANG_NAME[l]}>{LANG_LABEL[l]}</a>)}</nav>
+    <nav class="lang lang--drawer" aria-label={t(L, 'Język')}>{LANGS.map((l) => <a href={hrefPl(path === '404' ? '' : path, l)} hreflang={l} lang={l} aria-current={l === L ? 'true' : undefined} title={LANG_NAME[l]}><LangFlag lang={l} uid="-d" /><span>{LANG_LABEL[l]}</span></a>)}</nav>
   </div>
 </div>

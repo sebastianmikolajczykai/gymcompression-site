@@ -4,7 +4,8 @@ import en from './en.json';
 import uk from './uk.json';
 
 export type Lang = 'pl' | 'en' | 'uk';
-export const LANGS: Lang[] = ['pl', 'en', 'uk'];
+// Kolejność w przełączniku języka: polski, ukraiński, angielski.
+export const LANGS: Lang[] = ['pl', 'uk', 'en'];
 export const FOREIGN: Lang[] = ['en', 'uk'];
 // Języki widoczne dla Google (index, sitemap, hreflang). EN/UA mają robocze tłumaczenia,
 // więc na start są noindex. Po weryfikacji tłumaczeń: ['pl', 'en', 'uk'].

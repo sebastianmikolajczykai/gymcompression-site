@@ -157,9 +157,20 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 
 /* Przełącznik języka */
 .lang { display: flex; align-items: center; gap: 2px; margin-right: var(--s-2); font: 500 .8rem/1 var(--f-mono); }
-.lang a { display: inline-grid; place-items: center; min-width: 2.2rem; height: 2.2rem; padding: 0 .35rem; border-radius: 999px; text-decoration: none; color: var(--muted); }
+.lang a { display: inline-flex; align-items: center; justify-content: center; gap: .3rem; min-width: 2.2rem; height: 2.2rem; padding: 0 .35rem; border-radius: 999px; text-decoration: none; color: var(--muted); }
 .lang a:hover { color: var(--ink); background: var(--chalk); }
 .lang a[aria-current] { color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.lang .flag { width: 16px; height: 12px; flex: none; border-radius: 2px; box-shadow: 0 0 0 1px rgb(0 0 0 / .15); overflow: hidden; }
 .lang--drawer { margin: var(--s-5) 0 0; gap: var(--s-2); }
 .lang--drawer a { min-width: 3rem; height: 2.75rem; font-size: .9rem; }
 @media (max-width: 960px) { .tools > .lang { display: none; } }
+/* Wąski desktop (laptopy): wszystko widoczne, tylko ciaśniejsze odstępy, żeby nagłówek mieścił się w ekranie. */
+@media (min-width: 961px) and (max-width: 1200px) {
+  .hdr__in { gap: var(--s-3); }
+  .nav { gap: 0; }
+  .nav a.top { padding: .6rem .5rem; font-size: .95rem; }
+  .tools { gap: 0; }
+  .lang { margin-right: var(--s-1); }
+  .lang a { padding: 0 .3rem; gap: .25rem; }
+  .icon-btn { width: 2.5rem; }
+}
