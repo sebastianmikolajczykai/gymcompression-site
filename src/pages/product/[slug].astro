@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import SizeAdvisor from '../../components/SizeAdvisor.astro';
+import Shipping from '../../components/Shipping.astro';
 import SizeTable from '../../components/SizeTable.astro';
 import { products, type Product, primaryCollection, trail, href as hrefPl, pln as plnPl, kind, imgSrc, srcset, productPath, inCollection, line, pages } from '../../lib/shop';
 import { langOf, t, tf, plural, pname, lp } from '../../i18n';
@@ -83,6 +84,7 @@ const ogImage = p.images[0]?.original;
             <li>{t(L, 'Płatności online Przelewy24')}</li>
             <li>{t(L, 'Wysyłka i zwroty:')} <a href="#dostawa">{t(L, 'szczegóły')}</a></li>
           </ul>
+          <Shipping />
         </form>
       </div>
     </section>

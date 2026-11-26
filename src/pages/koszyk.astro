@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Shipping from '../components/Shipping.astro';
 import { href as hrefPl, pln, isShowcase } from '../lib/shop';
 import { langOf, t, NUM_LOCALE } from '../i18n';
 const L = langOf(Astro.url.pathname);
@@ -13,7 +14,8 @@ const cm = { size: t(L, 'Rozmiar'), less: t(L, 'Mniej'), more: t(L, 'Więcej'), 
       <div data-cart-list><p class="muted">{t(L, 'Koszyk jest pusty.')} <a href={href('zestawy-kompresyjne')}>{t(L, 'Zobacz zestawy')}</a></p></div>
       <aside class="sum" aria-label={t(L, 'Podsumowanie')}>
         <h2>{t(L, 'Podsumowanie')}</h2>
-        <dl><div><dt>{t(L, 'Produkty')}</dt><dd class="price" data-sum>{pln(0, L)}</dd></div><div><dt>{t(L, 'Dostawa')}</dt><dd class="muted">{t(L, 'wyliczana w kolejnym kroku')}</dd></div></dl>
+        <dl><div><dt>{t(L, 'Produkty')}</dt><dd class="price" data-sum>{pln(0, L)}</dd></div><div><dt>{t(L, 'Dostawa')}</dt><dd>{t(L, 'od')} {pln(0, L)}</dd></div></dl>
+        <Shipping />
         <button class="btn btn--block" type="button" data-checkout disabled>{t(L, 'Przejdź do kasy')}</button>
         <p class="muted small" data-note hidden role="status">{isShowcase ? <>{t(L, 'Płatności online na tej stronie uruchomimy wkrótce. Do tego czasu zamówienie złożysz w obecnym sklepie:')}{' '}<a href="https://gymcompression.pl/shop/">gymcompression.pl</a></> : t(L, 'To prototyp: zamówienie nie zostanie złożone. W wersji produkcyjnej ten przycisk prowadzi do kasy WooCommerce z płatnością Przelewy24.')}</p>
       </aside>
