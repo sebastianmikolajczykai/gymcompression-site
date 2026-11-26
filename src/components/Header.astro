@@ -10,7 +10,7 @@ const count = (p: string) => inCollection(byPath(p)!).length;
 ---
 <header class="hdr">
   <div class="wrap hdr__in">
-    <a class="logo" href={href('')} aria-label={`Gym Compression – ${t(L, 'strona główna')}`}><b>Gym</b> <span>Compression</span></a>
+    <a class="logo" href={href('')} aria-label={`Gym Compression – ${t(L, 'strona główna')}`}><img src="/img/logo-black.png" width="360" height="108" alt="" /></a>
     <nav class="nav" aria-label={t(L, 'Główne kategorie')}>
       {mainNav.map((n) => (
         <div>
@@ -23,7 +23,6 @@ const count = (p: string) => inCollection(byPath(p)!).length;
           )}
         </div>
       ))}
-      <div><a class="top" href={hrefPl('blog')} hreflang="pl" aria-current={active === 'blog' ? 'page' : undefined}>{t(L, 'Poradnik')}</a></div>
     </nav>
     <div class="tools">
       <nav class="lang" aria-label={t(L, 'Język')}>{LANGS.map((l) => <a href={hrefPl(path === '404' ? '' : path, l)} hreflang={l} lang={l} aria-current={l === L ? 'true' : undefined} title={LANG_NAME[l]}><LangFlag lang={l} uid="-h" /><span>{LANG_LABEL[l]}</span></a>)}</nav>
@@ -43,20 +42,25 @@ const count = (p: string) => inCollection(byPath(p)!).length;
 <div class="drawer" data-drawer hidden>
   <div class="drawer__panel" role="dialog" aria-label={t(L, 'Menu')}>
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <a class="logo" href={href('')}><b>Gym</b><span>Compression</span></a>
+      <a class="logo" href={href('')}><img src="/img/logo-black.png" width="360" height="108" alt="Gym Compression" loading="lazy" /></a>
       <button class="icon-btn" type="button" aria-label={t(L, 'Zamknij menu')} data-menu-close>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
     </div>
     <nav aria-label={t(L, 'Menu mobilne')}>
-      {mainNav.map((n) => (
-        <>
-          <a href={href(n.path)}>{t(L, n.label)}</a>
-          {n.children?.map((c) => <a class="child" href={href(c)}>{t(L, byPath(c)!.name)}</a>)}
-        </>
+      {mainNav.map((n) => n.children ? (
+        <details class="grp">
+          <summary>{t(L, n.label)}</summary>
+          <div class="grp__in">
+            <a class="child" href={href(n.path)}><strong>{t(L, 'Wszystkie')}</strong> <small>{count(n.path)}</small></a>
+            {n.children.map((c) => <a class="child" href={href(c)}>{t(L, byPath(c)!.name)} <small>{count(c)}</small></a>)}
+          </div>
+        </details>
+      ) : (
+        <a href={href(n.path)}>{t(L, n.label)}</a>
       ))}
-      <a href={href('tabela-rozmiarow')}>{t(L, 'Tabela rozmiarów')}</a>
-      <a href={hrefPl('blog')} hreflang="pl">{t(L, 'Poradnik')}</a>
+      <a class="minor" href={href('tabela-rozmiarow')}>{t(L, 'Tabela rozmiarów')}</a>
+      <a class="minor" href={hrefPl('blog')} hreflang="pl">{t(L, 'Blog')}</a>
     </nav>
     <nav class="lang lang--drawer" aria-label={t(L, 'Język')}>{LANGS.map((l) => <a href={hrefPl(path === '404' ? '' : path, l)} hreflang={l} lang={l} aria-current={l === L ? 'true' : undefined} title={LANG_NAME[l]}><LangFlag lang={l} uid="-d" /><span>{LANG_LABEL[l]}</span></a>)}</nav>
   </div>

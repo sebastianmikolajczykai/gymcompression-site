@@ -4,7 +4,7 @@ import ProductCard from '../components/ProductCard.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import SetCompare from '../components/SetCompare.astro';
 import { collections, type Collection } from '../data/catalog';
-import { inCollection, catBySlug, trail, href as hrefPl, abs, productPath } from '../lib/shop';
+import { inCollection, catBySlug, trail, href as hrefPl, abs, productPath, line } from '../lib/shop';
 import { langOf, t, tf, pname, lp } from '../i18n';
 import { breadcrumbLd, itemListLd } from '../lib/schema';
 
@@ -27,8 +27,12 @@ const sizes = [...new Set(items.flatMap((p) => p.sizes))].sort((a, b) => ['S', '
 const title = L === 'pl' && c.title ? c.title : `${t(L, c.h1)} | Gym Compression`;
 const description = (L === 'pl' && c.desc) || woo?.seoDesc || `${t(L, c.intro)} ${tf(L, '{n} produktów w rozmiarach {a}–{b}.', { n: items.length, a: sizes[0], b: sizes.at(-1)! })}`;
 const chips = children.length ? children : siblings;
+// Filtr linii (Gym Compression / Spartan) tylko tam, gdzie są obie linie.
+const lines = [...new Set(items.map(line))].sort();
+const root = trail(c)[0]?.path;
+const activeNav = root === 'odziez-kompresyjna-meska' ? (trail(c)[1]?.path ?? root) : root;
 ---
-<Base title={title} description={description} path={c.path} noindex={c.noindex} activeNav={trail(c)[0]?.path === 'odziez-kompresyjna-meska' ? trail(c)[1]?.path : c.path}
+<Base title={title} description={description} path={c.path} noindex={c.noindex} activeNav={activeNav}
   jsonld={[breadcrumbLd(ldCrumbs), itemListLd(items.map((p) => ({ url: abs(lp(L, productPath(p))), name: pname(L, p.name) })))]}>
   <Breadcrumbs items={crumbs} />
   <header class="wrap plp-head">
@@ -36,7 +40,9 @@ const chips = children.length ? children : siblings;
     <p class="plp-lead">{t(L, c.intro)}</p>
     {chips.length > 0 && (
       <nav class="chips" aria-label={t(L, 'Podkategorie')}>
-        {parent && siblings.length > 0 && <a class="chip" href={href(parent.path)}>{t(L, 'Wszystkie')}</a>}
+        {children.length > 0
+          ? <a class="chip" href={href(c.path)} aria-current="page">{t(L, 'Wszystkie')} <span class="mono">{items.length}</span></a>
+          : parent && <a class="chip" href={href(parent.path)}>{t(L, 'Wszystkie')} <span class="mono">{inCollection(parent).length}</span></a>}
         {chips.map((x) => <a class="chip" href={href(x.path)} aria-current={x.path === c.path ? 'page' : undefined}>{t(L, x.name)} <span class="mono">{inCollection(x).length}</span></a>)}
       </nav>
     )}
@@ -52,6 +58,13 @@ const chips = children.length ? children : siblings;
           <legend class="sr-only">{t(L, 'Rozmiar')}</legend>
           {sizes.map((s) => <label class="sz"><input type="checkbox" value={s} data-size /> <span>{s}</span></label>)}
         </fieldset>
+        {lines.length > 1 && (
+          <fieldset class="lines-f">
+            <legend class="sr-only">{t(L, 'Linia')}</legend>
+            <label class="ln"><input type="radio" name="line" value="" data-ln checked /> <span>{t(L, 'Wszystkie')}</span></label>
+            {lines.map((l) => <label class="ln"><input type="radio" name="line" value={l} data-ln /> <span>{l}</span></label>)}
+          </fieldset>
+        )}
         <label class="sort"><span class="sr-only">{t(L, 'Sortuj')}</span>
           <select data-sort>
             <option value="new">{t(L, 'Najnowsze')}</option>
@@ -63,7 +76,7 @@ const chips = children.length ? children : siblings;
     </div>
     <h2 class="sr-only">{t(L, 'Produkty w kategorii')}</h2>
     <div class="grid" data-grid>
-      {items.map((p, i) => <div data-item data-price={p.price} data-id={p.id} data-sizes={p.sizes.join(' ')}><ProductCard p={p} eager={i < 4} /></div>)}
+      {items.map((p, i) => <div data-item data-price={p.price} data-id={p.id} data-line={line(p)} data-sizes={p.sizes.join(' ')}><ProductCard p={p} eager={i < 4} /></div>)}
     </div>
     <p class="empty" data-empty hidden>{t(L, 'Brak produktów w wybranym rozmiarze.')} <button type="button" class="linkbtn" data-reset>{t(L, 'Wyczyść filtr')}</button></p>
   </div>
@@ -93,6 +106,12 @@ const chips = children.length ? children : siblings;
   .sz span { display: inline-grid; place-items: center; min-width: 2.75rem; height: 2.5rem; padding: 0 .6rem; border: 1px solid var(--line); border-radius: 8px; font: 500 var(--t-sm)/1 var(--f-mono); }
   .sz input:checked + span { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .sz input:focus-visible + span { outline: 2px solid var(--tape); outline-offset: 2px; }
+  .lines-f { border: 0; padding: 0; margin: 0; display: flex; gap: 4px; }
+  .ln { position: relative; }
+  .ln input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .ln span { display: inline-grid; place-items: center; height: 2.5rem; padding: 0 .9rem; border: 1px solid var(--line); border-radius: 999px; font-size: var(--t-sm); font-weight: 600; white-space: nowrap; }
+  .ln input:checked + span { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .ln input:focus-visible + span { outline: 2px solid var(--tape); outline-offset: 2px; }
   .sort select { height: 2.5rem; border: 1px solid var(--line); border-radius: 8px; padding: 0 .8rem; background: var(--paper); font: inherit; font-size: var(--t-sm); color: var(--ink); }
   .empty { padding: var(--s-7) 0; text-align: center; color: var(--muted); }
   .linkbtn { background: none; border: 0; padding: 0; text-decoration: underline; color: var(--ink); }
@@ -106,17 +125,21 @@ const chips = children.length ? children : siblings;
     .sizes-f { grid-column: 1 / -1; flex-wrap: nowrap; }
     .sz { flex: 1; }
     .sz span { display: grid; min-width: 0; width: 100%; padding: 0 .3rem; }
+    .lines-f { grid-column: 1 / -1; }
+    .ln { flex: 1; }
+    .ln span { display: grid; width: 100%; height: 2.25rem; padding: 0 .4rem; }
   }
 </style>
 <script is:inline>
   (function () {
     var root = document.querySelector('[data-plp]'); if (!root) return;
     var grid = root.querySelector('[data-grid]'), items = Array.prototype.slice.call(root.querySelectorAll('[data-item]'));
-    var sort = root.querySelector('[data-sort]'), boxes = root.querySelectorAll('[data-size]');
+    var sort = root.querySelector('[data-sort]'), boxes = root.querySelectorAll('[data-size]'), lines = root.querySelectorAll("[data-ln]");
     function apply() {
       var want = Array.prototype.filter.call(boxes, function (b) { return b.checked; }).map(function (b) { return b.value; });
       var n = 0;
-      items.forEach(function (el) { var s = el.dataset.sizes.split(' '); var ok = !want.length || want.some(function (w) { return s.indexOf(w) > -1; }); el.hidden = !ok; if (ok) n++; });
+      var ln = (Array.prototype.find.call(lines, function (r) { return r.checked; }) || {}).value || '';
+      items.forEach(function (el) { var s = el.dataset.sizes.split(' '); var ok = (!want.length || want.some(function (w) { return s.indexOf(w) > -1; })) && (!ln || el.dataset.line === ln); el.hidden = !ok; if (ok) n++; });
       var v = sort.value;
       items.slice().sort(function (a, b) { return v === 'asc' ? a.dataset.price - b.dataset.price : v === 'desc' ? b.dataset.price - a.dataset.price : b.dataset.id - a.dataset.id; }).forEach(function (el) { grid.appendChild(el); });
       root.querySelector('[data-count]').textContent = n;
@@ -124,6 +147,7 @@ const chips = children.length ? children : siblings;
     }
     sort.addEventListener('change', apply);
     boxes.forEach(function (b) { b.addEventListener('change', apply); });
-    root.querySelector('[data-reset]').addEventListener('click', function () { boxes.forEach(function (b) { b.checked = false; }); apply(); });
+    lines.forEach(function (b) { b.addEventListener('change', apply); });
+    root.querySelector('[data-reset]').addEventListener('click', function () { boxes.forEach(function (b) { b.checked = false; }); if (lines.length) lines[0].checked = true; apply(); });
   })();
 </script>

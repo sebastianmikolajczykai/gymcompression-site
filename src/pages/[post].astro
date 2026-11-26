@@ -15,7 +15,7 @@ export function getStaticPaths() {
 const { newer, older, info } = Astro.props as { p?: Post; newer?: Post; older?: Post; info?: { slug: string; title: string; html: string; seoDesc: string } };
 // Strona informacyjna używa tego samego szablonu bez elementów wpisu.
 const p = (Astro.props.p ?? { id: 0, date: '', modified: '', slug: info!.slug, url: `/${info!.slug}/`, title: info!.title, excerpt: info!.seoDesc, image: null, html: info!.html }) as Post;
-const crumbs = info ? [{ name: 'Strona główna', path: '' }, { name: p.title, path: postPath(p) }] : [{ name: 'Strona główna', path: '' }, { name: 'Poradnik', path: 'blog' }, { name: p.title, path: postPath(p) }];
+const crumbs = info ? [{ name: 'Strona główna', path: '' }, { name: p.title, path: postPath(p) }] : [{ name: 'Strona główna', path: '' }, { name: 'Blog', path: 'blog' }, { name: p.title, path: postPath(p) }];
 const fmt = (d: string) => new Date(d).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' });
 const cut = (s: string, n: number) => (s.length > n ? s.slice(0, n).replace(/\s+\S*$/, '') + '…' : s);
 const title = `${p.title} | Gym Compression`.length <= 65 ? `${p.title} | Gym Compression` : p.title;

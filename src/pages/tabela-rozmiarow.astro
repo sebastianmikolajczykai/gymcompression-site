@@ -54,6 +54,7 @@ const shade: Record<string, string> = { M: '#dfe6fb', L: '#b6c6f6', XL: '#7d98ee
     <section aria-labelledby="g-h" class="sg__block">
       <h2 id="g-h">{t(L, 'Siatka wzrost × waga')}</h2>
       <p class="note">{t(L, 'Ta sama siatka, której używa kalkulator. Wiersze: wzrost w cm, kolumny: waga w kg.')}</p>
+      <p class="note"><strong>{t(L, 'Rekomendacja sprzedawcy:')}</strong> {t(L, 'odzież kompresyjna ma ściśle przylegać, dlatego zwykle polecamy rozmiar o jeden mniejszy niż w siatce (np. L w siatce, M w rekomendacji).')}</p>
       <div class="table-scroll">
         <table class="grid-t">
           <thead><tr><th scope="col"><span class="sr-only">{t(L, 'Wzrost / waga')}</span>cm \ kg</th>{weights.map((w) => <th scope="col">{w}</th>)}</tr></thead>

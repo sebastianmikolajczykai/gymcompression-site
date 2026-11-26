@@ -9,6 +9,10 @@ const msg = {
   na: t(L, 'Ten produkt nie jest dostępny w tym rozmiarze.'),
   forx: t(L, 'Dla {h} cm i {w} kg.'),
   range: t(L, 'Zakres {s}: wzrost {h} cm, klatka {c} cm.'),
+  rec: t(L, 'Rekomendacja sprzedawcy'),
+  byTable: t(L, 'Według tabeli: {s}.'),
+  why: t(L, 'Odzież kompresyjna ma ściśle przylegać, dlatego zwykle polecamy rozmiar o jeden mniejszy niż w tabeli. Jeśli wolisz luźniejszy krój, wybierz rozmiar z tabeli.'),
+  same: t(L, 'To najmniejszy rozmiar w tabeli, więc rekomendacja jest taka sama.'),
 };
 const { id = 'sa', available } = Astro.props as { id?: string; available?: string[] };
 const data = JSON.stringify({ heights, weights, matrix, table: sizeTable, available: available || null });
@@ -24,7 +28,7 @@ const data = JSON.stringify({ heights, weights, matrix, table: sizeTable, availa
     <button class="btn" type="button" data-sa-go>{t(L, 'Dobierz rozmiar')}</button>
   </div>
   <div class="sa__out" aria-live="polite" data-sa-out>
-    <p class="sa__hint">{t(L, 'Wpisane są przykładowe wartości: zmień je na swoje albo od razu kliknij „Dobierz rozmiar”. Wynik pochodzi z tabeli dopasowania Gym Compression.')}</p>
+    <p class="sa__hint">{t(L, 'Wpisane są przykładowe wartości: zmień je na swoje albo od razu kliknij „Dobierz rozmiar”. Pokażemy rozmiar z tabeli dopasowania Gym Compression i rekomendację sprzedawcy.')}</p>
   </div>
 </div>
 <style>
@@ -40,6 +44,8 @@ const data = JSON.stringify({ heights, weights, matrix, table: sizeTable, availa
   .sa__res { display: flex; gap: var(--s-4); align-items: center; padding: var(--s-4); border-radius: 12px; background: var(--paper); border: 1px solid var(--line); }
   .sa__size { font: 900 2.4rem/1 var(--f-display); font-stretch: 125%; min-width: 3.5ch; color: var(--tape); }
   .sa__res p { font-size: var(--t-sm); color: var(--graphite); }
+  .sa__res .eyebrow { display: block; color: var(--ink); margin-bottom: .25rem; }
+  .sa__res .sa__tbl { display: block; margin-top: .35rem; font: 600 var(--t-sm)/1.4 var(--f-mono); color: var(--ink); }
   @media (max-width: 560px) { .sa__form { grid-template-columns: 1fr 1fr; } .sa__form .btn { grid-column: 1 / -1; } }
 </style>
 <script is:inline define:vars={{ phone: company.phone, msg }}>
@@ -56,10 +62,17 @@ const data = JSON.stringify({ heights, weights, matrix, table: sizeTable, availa
         out.innerHTML = '<div class="sa__res"><p>' + msg.out + ' <span class="mono">' + phone + '</span></p></div>';
         return;
       }
+      // Siatka z obecnego sklepu (bez zmian) -> rozmiar z tabeli; sprzedawca poleca rozmiar o jeden mniejszy (decyzja Sebastiana 26.11.2026).
       var size = d.matrix[d.heights.indexOf(closest(h, d.heights))][d.weights.indexOf(closest(w, d.weights))];
+      var order = ['S', 'M', 'L', 'XL', 'XXL', '3XL'];
+      var pool = d.available || d.table.map(function (r) { return r.size; });
+      var lower = order[order.indexOf(size) - 1];
+      var rec = lower && pool.indexOf(lower) > -1 ? lower : size;
       var row = d.table.find(function (r) { return r.size === size; });
-      var note = d.available && d.available.indexOf(size) === -1 ? ' ' + msg.na : '';
-      out.innerHTML = '<div class="sa__res"><span class="sa__size">' + size + '</span><p>' + msg.forx.replace('{h}', h).replace('{w}', w) + (row ? ' ' + msg.range.replace('{s}', size).replace('{h}', row.height).replace('{c}', row.chest) : '') + note + '</p></div>';
+      var note = d.available && d.available.indexOf(rec) === -1 ? ' ' + msg.na : '';
+      out.innerHTML = '<div class="sa__res"><span class="sa__size">' + rec + '</span><p><span class="eyebrow">' + msg.rec + '</span>' + msg.forx.replace('{h}', h).replace('{w}', w) + ' ' + (rec === size ? msg.same : msg.why) + note +
+        '<span class="sa__tbl">' + msg.byTable.replace('{s}', size) + '</span>' + (row ? msg.range.replace('{s}', size).replace('{h}', row.height).replace('{c}', row.chest) : '') + '</p></div>';
+      size = rec;
       document.dispatchEvent(new CustomEvent('gc:size', { detail: size }));
     }
   });

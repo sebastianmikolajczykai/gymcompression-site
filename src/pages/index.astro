@@ -19,7 +19,10 @@ const sets = ['2w1', '3w1', '4w1', '5w1', '7w1'].map((n) => {
   return { n, k: Number(n[0]), col, count: items.length, from: items.length ? Math.min(...items.map((p) => p.price)) : 0 };
 }).filter((s) => s.count);
 
-const hero = products.find((p) => p.name.startsWith('7w1')) || products[0];
+// Zestaw w hero. Michał chce tu bestseller, ale nie mamy danych sprzedaży (26.11.2026).
+// Po otrzymaniu danych od Daniela wpisz slug bestsellera w HERO_SLUG i zmień etykietę na „Bestseller”.
+const HERO_SLUG = '7w1-gym-compression-obsidian-black';
+const hero = products.find((p) => p.slug === HERO_SLUG) || products.find((p) => p.name.startsWith('7w1')) || products[0];
 const newest = products.filter((p) => p.inStock).slice(0, 8);
 const types = ['rashguardy', 'legginsy-kompresyjne', 'spodenki-kompresyjne', 'bluzy-kompresyjne'].map((path) => {
   const col = byPath(path)!; const items = inCollection(col);
@@ -50,13 +53,13 @@ const latestPosts = L === 'pl' ? posts.slice(0, 3) : [];
         </div>
         <dl class="hero__facts">
           <div><dt class="eyebrow">{t(L, 'Produkty')}</dt><dd class="mono">{products.length}</dd></div>
-          <div><dt class="eyebrow">{t(L, 'Rozmiary')}</dt><dd class="mono">{allSizes[0] === 'S' ? 'S' : 'M'}–3XL</dd></div>
+          <div><dt class="eyebrow">{t(L, 'Rozmiary')}</dt><dd class="mono">{allSizes.includes('S') ? 'S' : 'M'}–3XL</dd></div>
           <div><dt class="eyebrow">{t(L, 'Ceny od')}</dt><dd class="mono">{pln(minPrice)}</dd></div>
         </dl>
       </div>
       <a class="hero__media" href={href(productPath(hero))}>
         <img src={imgSrc(hero.images[0].base, 960)} srcset={srcset(hero.images[0].base)} sizes="(max-width: 900px) 100vw, 50vw" width={hero.images[0].w} height={hero.images[0].h} alt={L === 'pl' ? hero.images[0].alt : pname(L, hero.name)} fetchpriority="high" />
-        <span class="hero__tag"><span class="eyebrow">{t(L, 'Najpełniejszy zestaw')}</span><strong>{pname(L, hero.name)}</strong><span class="price">{pln(hero.price)}</span></span>
+        <span class="hero__tag"><span class="eyebrow">{t(L, 'Polecany zestaw')}</span><strong>{pname(L, hero.name)}</strong><span class="price">{pln(hero.price)}</span></span>
       </a>
     </div>
   </section>
@@ -112,7 +115,7 @@ const latestPosts = L === 'pl' ? posts.slice(0, 3) : [];
       <div class="fit__copy">
         <p class="eyebrow">{t(L, 'Dobór rozmiaru')}</p>
         <h2 id="size-h">{t(L, 'Kompresja działa, gdy rozmiar się zgadza')}</h2>
-        <p>{t(L, 'Za luźna odzież nie wspiera mięśni, za ciasna ogranicza ruch. Wpisz wzrost i wagę, a pokażemy rozmiar z tabeli dopasowania Gym Compression.')}</p>
+        <p>{t(L, 'Za luźna odzież nie wspiera mięśni, za ciasna ogranicza ruch. Wpisz wzrost i wagę, a pokażemy rozmiar z tabeli dopasowania Gym Compression i rekomendację sprzedawcy.')}</p>
         <SizeAdvisor id="home-sa" />
       </div>
       <div class="fit__table">
@@ -137,7 +140,7 @@ const latestPosts = L === 'pl' ? posts.slice(0, 3) : [];
   {latestPosts.length > 0 && (
     <section class="section" aria-labelledby="blog-h">
       <div class="wrap">
-        <div class="section__head"><h2 id="blog-h">Poradnik</h2><a class="link-arrow" href={hrefPl('blog')}>Wszystkie artykuły</a></div>
+        <div class="section__head"><h2 id="blog-h">Blog</h2><a class="link-arrow" href={hrefPl('blog')}>Wszystkie artykuły</a></div>
         <div class="posts">
           {latestPosts.map((p) => <a class="post" href={hrefPl(postPath(p))}><span class="eyebrow">{new Date(p.date).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })}</span><h3>{p.title}</h3><p>{p.excerpt.slice(0, 170)}{p.excerpt.length > 170 ? '…' : ''}</p></a>)}
         </div>
@@ -159,9 +162,10 @@ const latestPosts = L === 'pl' ? posts.slice(0, 3) : [];
   .hero__media { position: relative; display: grid; grid-template-rows: minmax(0, 1fr) auto; border-radius: 8px; overflow: hidden; background: var(--paper); border: 1px solid var(--line); aspect-ratio: 4 / 5; max-height: 78vh; justify-self: end; width: 100%; max-width: 620px; text-decoration: none; }
   .hero__media img { width: 100%; height: 100%; min-height: 0; object-fit: contain; padding: var(--s-3); }
   /* Podpis pod zdjęciem, nie na nim (białe na białym się zlewało). */
-  .hero__tag { display: grid; grid-template-columns: 1fr auto; gap: .2rem var(--s-4); align-items: end; padding: var(--s-4); background: var(--ink); color: var(--paper); text-decoration: none; }
-  .hero__tag .eyebrow { color: #b8bec2; }
-  .hero__tag .eyebrow { grid-column: 1 / -1; }
+  .hero__tag { display: grid; grid-template-columns: 1fr auto; gap: .2rem var(--s-4); align-items: end; padding: var(--s-4); background: #e4e7e9; color: var(--ink); border-top: 1px solid var(--line); text-decoration: none; }
+  .hero__tag .eyebrow { grid-column: 1 / -1; color: var(--graphite); }
+  .hero__tag strong { font-weight: 600; }
+  .hero__tag .price { font-size: var(--t-lg); color: var(--ink); white-space: nowrap; }
   .hero__media:hover { color: var(--ink); }
   @media (max-width: 900px) {
     .hero__in { grid-template-columns: minmax(0, 1fr); gap: var(--s-5); padding-block: var(--s-5) var(--s-6); }

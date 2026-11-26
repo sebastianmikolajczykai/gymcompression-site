@@ -64,7 +64,8 @@ export const isDraft = isPreview || process.env.DRAFT === '1';
 export const isShowcase = process.env.SHOWCASE === '1';
 export const showBanner = isDraft && !isShowcase;
 
-export const inCollection = (c: Collection) => products.filter((p) => p.categories.some((s) => c.woo.includes(s)));
+export const line = (p: { name: string }) => (/spartan/i.test(p.name) ? 'Spartan' : 'Gym Compression');
+export const inCollection = (c: Collection) => products.filter((p) => p.categories.some((s) => c.woo.includes(s)) && !(c.exclude && p.categories.some((s) => c.exclude!.includes(s))) && (!c.line || line(p) === c.line));
 export const catBySlug = (s: string) => categories.find((c) => c.slug === s);
 export const productPath = (p: Product) => `product/${p.slug}`;
 
@@ -99,7 +100,6 @@ export const kind = (p: Product) => {
 };
 // Krótsza nazwa do kart: "5w1 Gym Compression Blue Shadow" -> "Blue Shadow"
 export const colorway = (p: Product) => p.name.replace(/^(\dw1\s+)?(Rashguard z (krótkim|długim) rękawem|Rashguard z kapturem|Legginsy damskie|Koszulka damska z krótkim rękawem|Longsleeve damski|Bluza damska z kapturem|Top sportowy|Legginsy|Bluza kompresyjna|Bluza|Spodenki z legginsami)?\s*/i, '').replace(/^(Gym Compression|Spartan)\s*/i, '').trim() || p.name;
-export const line = (p: Product) => (/spartan/i.test(p.name) ? 'Spartan' : 'Gym Compression');
 
 // Zdjęcia: wersje 480/960/1440 generowane przez fetch-data.mjs
 export const imgSrc = (base: string, w = 960) => `/img/p/${base}-${w}.webp`;
