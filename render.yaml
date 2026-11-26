@@ -65,10 +65,10 @@ services:
         destination: /odziez-kompresyjna-damska/
       - type: redirect
         source: /product-category/odziez-kompresyjna/odziez-damska/zestawy-kompresyjne-damskie/
-        destination: /odziez-kompresyjna-damska/
+        destination: /odziez-kompresyjna-damska/zestawy/
       - type: redirect
         source: /product-category/odziez-kompresyjna/odziez-damska/zestawy-kompresyjne-damskie/zestawy-kompresyjne-damskie-5w1/
-        destination: /odziez-kompresyjna-damska/
+        destination: /odziez-kompresyjna-damska/zestawy/
       - type: redirect
         source: /tabela-rozmiarow-2/
         destination: /tabela-rozmiarow/

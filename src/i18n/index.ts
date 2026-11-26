@@ -4,7 +4,8 @@ import en from './en.json';
 import uk from './uk.json';
 
 export type Lang = 'pl' | 'en' | 'uk';
-export const LANGS: Lang[] = ['pl', 'en', 'uk'];
+// Kolejność w przełączniku języka: polski, ukraiński, angielski.
+export const LANGS: Lang[] = ['pl', 'uk', 'en'];
 export const FOREIGN: Lang[] = ['en', 'uk'];
 // Języki widoczne dla Google (index, sitemap, hreflang). EN/UA mają robocze tłumaczenia,
 // więc na start są noindex. Po weryfikacji tłumaczeń: ['pl', 'en', 'uk'].
@@ -41,6 +42,11 @@ export function plural(lang: Lang, n: number, forms: [string, string, string]): 
 // Nazwy produktów: tłumaczymy tylko polski typ produktu i "5w1"; nazwy kolorów/linii zostają (to nazwy własne marki).
 const NAME_PREFIX: Record<'en' | 'uk', [RegExp, string][]> = {
   en: [
+    [/^Koszulka damska z krótkim rękawem/i, 'Women’s short-sleeve T-shirt'],
+    [/^Longsleeve damski/i, 'Women’s long sleeve'],
+    [/^Bluza damska z kapturem/i, 'Women’s hoodie'],
+    [/^Legginsy damskie/i, 'Women’s leggings'],
+    [/^Top sportowy/i, 'Sports top'],
     [/^Rashguard z długim rękawem/i, 'Long-sleeve rashguard'],
     [/^Rashguard z krótkim rękawem/i, 'Short-sleeve rashguard'],
     [/^Rashguard z kapturem/i, 'Hooded rashguard'],
@@ -51,6 +57,11 @@ const NAME_PREFIX: Record<'en' | 'uk', [RegExp, string][]> = {
     [/^Zestaw kompresyjny/i, 'Compression set'],
   ],
   uk: [
+    [/^Koszulka damska z krótkim rękawem/i, 'Жіноча футболка з коротким рукавом'],
+    [/^Longsleeve damski/i, 'Жіночий лонгслів'],
+    [/^Bluza damska z kapturem/i, 'Жіноче худі'],
+    [/^Legginsy damskie/i, 'Жіночі легінси'],
+    [/^Top sportowy/i, 'Спортивний топ'],
     [/^Rashguard z długim rękawem/i, 'Рашгард з довгим рукавом'],
     [/^Rashguard z krótkim rękawem/i, 'Рашгард з коротким рукавом'],
     [/^Rashguard z kapturem/i, 'Рашгард з капюшоном'],
@@ -66,6 +77,9 @@ export function pname(lang: Lang, name: string): string {
   if (dict[lang][name]) return dict[lang][name];
   let out = name.replace(/^(\d)w1\b/, lang === 'en' ? '$1-in-1' : '$1 в 1');
   for (const [re, rep] of NAME_PREFIX[lang]) if (re.test(out)) { out = out.replace(re, rep); break; }
+  // Skład w nawiasie, np. „(bluza, top, legginsy)” w damskich zestawach Noir Fit
+  const PART: Record<string, [string, string]> = { bluza: ['hoodie', 'худі'], longsleeve: ['long sleeve', 'лонгслів'], legginsy: ['leggings', 'легінси'], koszulka: ['T-shirt', 'футболка'], top: ['top', 'топ'] };
+  out = out.replace(/\(([^)]+)\)/, (_, inner: string) => '(' + inner.split(/\s*,\s*/).map((w) => PART[w.toLowerCase()]?.[lang === 'en' ? 0 : 1] ?? w).join(', ') + ')');
   return out.replace(/\bmęski\b/i, lang === 'en' ? "men's" : 'чоловічий').replace(/\bdamski\b/i, lang === 'en' ? "women's" : 'жіночий');
 }
 // Ścieżka kanoniczna z prefiksem języka (bez ukośników), do schema.org i hreflang.

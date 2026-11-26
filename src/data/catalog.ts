@@ -12,6 +12,8 @@ export interface Collection {
   title?: string;        // tytuł strony (domyślnie: H1 + „| Gym Compression”)
   desc?: string;         // opis meta (≤160 znaków); domyślnie opis z kategorii WooCommerce
   ownSeo?: boolean;      // nie bierz opisu i meta z kategorii WooCommerce (np. kolekcja łącząca kilka kategorii)
+  line?: 'Spartan' | 'Gym Compression'; // tylko produkty danej linii (po nazwie produktu)
+  exclude?: string[];    // kategorie WooCommerce, których produkty pomijamy (np. zestawy w „pojedynczych”)
 }
 
 // Opisy meta podkategorii zestawów (≤160 znaków, bez nowych twierdzeń względem opisów w sklepie)
@@ -66,6 +68,20 @@ export const collections: Collection[] = [
     parent: 'zestawy-kompresyjne',
     intro: `Męskie zestawy kompresyjne ${n}: ${n.charAt(0)} ${n.charAt(0) === '2' || n.charAt(0) === '3' || n.charAt(0) === '4' ? 'elementy' : 'elementów'} w jednym komplecie.`,
   })),
+  // Linia Spartan jako osobna zakładka (uwaga Michała 26.11.2026). Na liście „Wszystkie” zestawy Spartan są razem z Gym Compression.
+  {
+    path: 'zestawy-kompresyjne/spartan',
+    name: 'Edycja Spartan',
+    h1: 'Zestawy kompresyjne Spartan',
+    title: 'Zestawy kompresyjne Spartan męskie | Gym Compression',
+    desc: 'Zestawy kompresyjne z linii Spartan: komplety 2w1, 3w1, 4w1 i 5w1 dla mężczyzn na siłownię, crossfit i sporty walki. Rozmiary M–3XL.',
+    woo: ['zestawy-kompresyjne-meskie', 'zestawy-kompresyjne-meskie-2w1', 'zestawy-kompresyjne-meskie-3w1', 'zestawy-kompresyjne-meskie-4w1', 'zestawy-kompresyjne-meskie-5w1', 'zestawy-kompresyjne-meskie-7w1'],
+    old: [],
+    ownSeo: true,
+    line: 'Spartan',
+    parent: 'zestawy-kompresyjne',
+    intro: 'Zestawy z linii Spartan: od 2 do 5 elementów w jednym komplecie.',
+  },
   {
     path: 'rashguardy',
     name: 'Rashguardy',
@@ -138,25 +154,51 @@ export const collections: Collection[] = [
     h1: 'Odzież kompresyjna damska',
     desc: 'Damska odzież kompresyjna Gym Compression do treningu, sportu i aktywnego stylu życia. Sprawdź zestawy dla kobiet.',
     woo: ['odziez-damska', 'zestawy-kompresyjne-damskie', 'zestawy-kompresyjne-damskie-5w1'],
+    old: ['/product-category/odziez-kompresyjna/odziez-damska/'],
+    intro: 'Damska odzież kompresyjna: zestawy oraz pojedyncze legginsy, koszulki, longsleeve’y, topy i bluzy.',
+  },
+  {
+    path: 'odziez-kompresyjna-damska/zestawy',
+    name: 'Zestawy damskie',
+    h1: 'Zestawy kompresyjne damskie',
+    title: 'Zestawy kompresyjne damskie 2w1–5w1 | Gym Compression',
+    desc: 'Damskie zestawy kompresyjne Gym Compression: komplety 2w1, 3w1 i 5w1 z legginsami, koszulką, longsleeve’em, topem lub bluzą.',
+    woo: ['zestawy-kompresyjne-damskie', 'zestawy-kompresyjne-damskie-5w1'],
     old: [
-      '/product-category/odziez-kompresyjna/odziez-damska/',
       '/product-category/odziez-kompresyjna/odziez-damska/zestawy-kompresyjne-damskie/',
       '/product-category/odziez-kompresyjna/odziez-damska/zestawy-kompresyjne-damskie/zestawy-kompresyjne-damskie-5w1/',
     ],
-    intro: 'Damskie zestawy kompresyjne.',
+    ownSeo: true,
+    parent: 'odziez-kompresyjna-damska',
+    intro: 'Damskie komplety kompresyjne: kilka elementów w jednym zamówieniu.',
+  },
+  {
+    path: 'odziez-kompresyjna-damska/pojedyncze',
+    name: 'Pojedyncze elementy',
+    h1: 'Damska odzież kompresyjna: pojedyncze elementy',
+    title: 'Legginsy, koszulki i bluzy kompresyjne damskie | Gym Compression',
+    desc: 'Pojedyncza damska odzież kompresyjna Gym Compression: legginsy, koszulka, longsleeve, top sportowy i bluza z kapturem.',
+    woo: ['odziez-damska'],
+    exclude: ['zestawy-kompresyjne-damskie', 'zestawy-kompresyjne-damskie-5w1'],
+    old: [],
+    ownSeo: true,
+    parent: 'odziez-kompresyjna-damska',
+    intro: 'Legginsy, koszulki, longsleeve’y, topy i bluzy do skompletowania po swojemu.',
   },
 ];
 
 export const byPath = (p: string) => collections.find((c) => c.path === p);
 
 // Główne menu (kolejność = priorytet sprzedażowy)
+// Mężczyźni / Kobiety na początku (uwaga Michała 26.11.2026), potem kategorie męskie. „Blog” jest w stopce.
 export const mainNav = [
-  { label: 'Zestawy', path: 'zestawy-kompresyjne', children: ['zestawy-kompresyjne/2w1', 'zestawy-kompresyjne/3w1', 'zestawy-kompresyjne/4w1', 'zestawy-kompresyjne/5w1', 'zestawy-kompresyjne/7w1'] },
+  { label: 'Mężczyźni', path: 'odziez-kompresyjna-meska', children: ['zestawy-kompresyjne', 'zestawy-kompresyjne/spartan', 'rashguardy', 'legginsy-kompresyjne', 'spodenki-kompresyjne', 'bluzy-kompresyjne'] },
+  { label: 'Kobiety', path: 'odziez-kompresyjna-damska', children: ['odziez-kompresyjna-damska/zestawy', 'odziez-kompresyjna-damska/pojedyncze'] },
+  { label: 'Zestawy', path: 'zestawy-kompresyjne', children: ['zestawy-kompresyjne/2w1', 'zestawy-kompresyjne/3w1', 'zestawy-kompresyjne/4w1', 'zestawy-kompresyjne/5w1', 'zestawy-kompresyjne/7w1', 'zestawy-kompresyjne/spartan'] },
   { label: 'Rashguardy', path: 'rashguardy', children: ['rashguardy/krotki-rekaw', 'rashguardy/dlugi-rekaw'] },
   { label: 'Legginsy', path: 'legginsy-kompresyjne' },
   { label: 'Spodenki', path: 'spodenki-kompresyjne' },
   { label: 'Bluzy', path: 'bluzy-kompresyjne' },
-  { label: 'Kobiety', path: 'odziez-kompresyjna-damska' },
 ];
 
 // Dane firmy z obecnej stopki gymcompression.pl

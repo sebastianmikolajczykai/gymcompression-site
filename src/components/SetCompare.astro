@@ -7,12 +7,13 @@ const L = langOf(Astro.url.pathname);
 const href = (p: string) => hrefPl(p, L);
 const { open = false } = Astro.props as { open?: boolean };
 
+// Skład wg zestawów w sklepie (pole setItems): wymieniamy elementy, bez „dochodzi” (uwaga Michała 26.11.2026).
 const SUMMARY: Record<string, string> = {
-  '2w1': 'Góra i spodenki. Największy klasyk.',
-  '3w1': 'Góra, spodenki i legginsy.',
+  '2w1': 'Koszulka i spodenki. Największy klasyk.',
+  '3w1': 'Koszulka, legginsy i spodenki.',
   '4w1': 'Krótki i długi rękaw, legginsy i spodenki.',
-  '5w1': 'Jak 4w1 plus bluza na chłodniejsze dni.',
-  '7w1': 'Najpełniejszy komplet: dochodzi bokserka i spodenki kompresyjne.',
+  '5w1': 'Bluza z kapturem, krótki i długi rękaw, legginsy i spodenki.',
+  '7w1': 'Bluza z kapturem, krótki i długi rękaw, bokserka, legginsy, spodenki i spodenki kompresyjne.',
 };
 const sets = ['2w1', '3w1', '4w1', '5w1', '7w1'].map((n) => {
   const col = byPath(`zestawy-kompresyjne/${n}`)!;
@@ -51,15 +52,15 @@ const label = (n: string) => (L === 'en' ? n.replace('w', '-in-') : L === 'uk' ?
   .cmp__lead { max-width: 70ch; color: var(--graphite); }
   .cmp__list { list-style: none; margin: 0; padding: 0; }
   .cmp__list li { border-top: 1px solid var(--line); }
-  .cmp__list a { display: grid; grid-template-columns: 4.5rem 1fr auto; gap: var(--s-4); align-items: center; padding: var(--s-4) 0; text-decoration: none; }
-  .cmp__n { font: 800 var(--t-xl)/1 var(--f-display); font-stretch: 112%; }
+  .cmp__list a { display: grid; grid-template-columns: minmax(4.5rem, auto) 1fr auto; gap: var(--s-4); align-items: center; padding: var(--s-4) 0; text-decoration: none; }
+  .cmp__n { font: 800 var(--t-xl)/1 var(--f-display); font-stretch: 112%; white-space: nowrap; }
   .cmp__d { color: var(--graphite); }
   .cmp__p { display: grid; gap: .2rem; justify-items: end; font-size: var(--t-sm); white-space: nowrap; }
   .cmp__p .mono { font-weight: 600; }
   .cmp__list a:hover .cmp__n { color: var(--tape); }
   @media (max-width: 560px) {
     .cmp summary { font-size: var(--t-md); padding: var(--s-4); } .cmp__body { padding: 0 var(--s-4) var(--s-4); }
-    .cmp__list a { grid-template-columns: 3.5rem 1fr; gap: .4rem var(--s-3); }
+    .cmp__list a { grid-template-columns: minmax(3.5rem, auto) 1fr; gap: .4rem var(--s-3); }
     .cmp__p { grid-column: 2; justify-items: start; grid-auto-flow: column; justify-content: start; gap: var(--s-4); }
   }
 </style>

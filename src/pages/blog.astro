@@ -4,16 +4,16 @@ import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { posts, postPath, href, abs } from '../lib/shop';
 import { breadcrumbLd, itemListLd } from '../lib/schema';
-const crumbs = [{ name: 'Strona główna', path: '' }, { name: 'Poradnik', path: 'blog' }];
+const crumbs = [{ name: 'Strona główna', path: '' }, { name: 'Blog', path: 'blog' }];
 const fmt = (d: string) => new Date(d).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric' });
 const topics = ['rashguard', 'legginsy', 'spodenki', 'zestaw', 'bluza', 'rozmiar', 'pranie', 'MMA', 'crossfit', 'bieganie']
   .filter((w) => posts.filter((p) => `${p.title} ${p.excerpt}`.toLowerCase().includes(w.toLowerCase())).length >= 3);
 ---
-<Base title="Poradnik: odzież kompresyjna i trening | Gym Compression" description={`Poradniki Gym Compression: jak dobrać rozmiar, rashguard, legginsy i zestaw kompresyjny, jak prać odzież sportową. ${posts.length} artykułów.`} path="blog" activeNav="blog" plOnly
-  jsonld={[breadcrumbLd(crumbs), { '@context': 'https://schema.org', '@type': 'Blog', '@id': 'https://gymcompression.pl/blog/#blog', name: 'Poradnik Gym Compression', url: abs('blog'), inLanguage: 'pl', publisher: { '@id': 'https://gymcompression.pl/#organization' } }, itemListLd(posts.slice(0, 30).map((p) => ({ url: abs(postPath(p)), name: p.title })))]}>
+<Base title="Blog: odzież kompresyjna i trening | Gym Compression" description={`Blog Gym Compression: jak dobrać rozmiar, rashguard, legginsy i zestaw kompresyjny, jak prać odzież sportową. ${posts.length} artykułów.`} path="blog" activeNav="blog" plOnly
+  jsonld={[breadcrumbLd(crumbs), { '@context': 'https://schema.org', '@type': 'Blog', '@id': 'https://gymcompression.pl/blog/#blog', name: 'Blog Gym Compression', url: abs('blog'), inLanguage: 'pl', publisher: { '@id': 'https://gymcompression.pl/#organization' } }, itemListLd(posts.slice(0, 30).map((p) => ({ url: abs(postPath(p)), name: p.title })))]}>
   <Breadcrumbs items={crumbs} />
   <header class="wrap blog-head">
-    <h1>Poradnik</h1>
+    <h1>Blog</h1>
     <p class="blog-lead">Jak dobrać odzież kompresyjną, rozmiar i zestaw do swojego treningu. Wybierz temat albo wpisz, czego szukasz.</p>
     <div class="blog-tools" data-blog>
       <label class="blog-search"><span class="sr-only">Szukaj w poradniku</span>
