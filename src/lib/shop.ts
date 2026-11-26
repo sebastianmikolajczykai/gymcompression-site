@@ -7,6 +7,8 @@ import { collections, type Collection } from '../data/catalog';
 import { productOverrides } from '../data/overrides';
 // Zdjęcia na białym tle z aukcji Allegro Daniela (konto Sportodziez_GC), zgoda Michała 25.11.2026. Pierwsze w galerii, stare zostają dalej.
 import allegroImagesRaw from '../data/allegro-images.json';
+// Damska linia Noir Fit z aukcji Allegro Daniela (dane i zdjęcia zweryfikowane przez Sebastiana 26.11.2026). Nie ma ich w obecnym sklepie, więc bez oldUrl.
+import allegroProductsRaw from '../data/allegro-products.json';
 
 export interface Img { base: string; w: number; h: number; alt: string; original?: string }
 export interface Product {
@@ -47,7 +49,7 @@ const withAllegro = (p: Product): Img[] => {
   const a = allegroImages[p.slug];
   return a ? [{ base: a.base, w: a.w, h: a.h, alt: a.alt, original: a.original }, ...p.images] : p.images;
 };
-export const products = (productsRaw as Product[]).map((p) => ({ ...p, ...productOverrides[p.slug], images: withAllegro(p), descHtml: fixHtml(p.descHtml) })).sort((a, b) => b.id - a.id);
+export const products = [...(productsRaw as Product[]), ...(allegroProductsRaw as Product[])].map((p) => ({ ...p, ...productOverrides[p.slug], images: withAllegro(p), descHtml: fixHtml(p.descHtml) })).sort((a, b) => b.id - a.id);
 export const categories = (categoriesRaw as Category[]).map((c) => ({ ...c, descHtml: fixHtml(c.descHtml) }));
 export interface Post { id: number; date: string; modified: string; slug: string; url: string; title: string; excerpt: string; image: { src: string; w: number; h: number; alt: string; original: string } | null; html: string }
 // Wpisy bloga (scripts/fetch-posts.mjs). Adresy jak w obecnym sklepie: /<slug>/.
@@ -88,11 +90,15 @@ export const kind = (p: Product) => {
   if (n.startsWith('rashguard z kapturem')) return 'Rashguard z kapturem';
   if (n.startsWith('legginsy')) return 'Legginsy kompresyjne';
   if (n.startsWith('spodenki')) return 'Spodenki z legginsami';
+  if (n.startsWith('bluza damska')) return 'Bluza damska';
   if (n.startsWith('bluza')) return 'Bluza kompresyjna';
+  if (n.startsWith('koszulka damska')) return 'Koszulka damska';
+  if (n.startsWith('longsleeve')) return 'Longsleeve damski';
+  if (n.startsWith('top sportowy')) return 'Top sportowy';
   return 'Odzież kompresyjna';
 };
 // Krótsza nazwa do kart: "5w1 Gym Compression Blue Shadow" -> "Blue Shadow"
-export const colorway = (p: Product) => p.name.replace(/^(\dw1\s+)?(Rashguard z (krótkim|długim) rękawem|Rashguard z kapturem|Legginsy|Bluza kompresyjna|Bluza|Spodenki z legginsami)?\s*/i, '').replace(/^(Gym Compression|Spartan)\s*/i, '').trim() || p.name;
+export const colorway = (p: Product) => p.name.replace(/^(\dw1\s+)?(Rashguard z (krótkim|długim) rękawem|Rashguard z kapturem|Legginsy damskie|Koszulka damska z krótkim rękawem|Longsleeve damski|Bluza damska z kapturem|Top sportowy|Legginsy|Bluza kompresyjna|Bluza|Spodenki z legginsami)?\s*/i, '').replace(/^(Gym Compression|Spartan)\s*/i, '').trim() || p.name;
 export const line = (p: Product) => (/spartan/i.test(p.name) ? 'Spartan' : 'Gym Compression');
 
 // Zdjęcia: wersje 480/960/1440 generowane przez fetch-data.mjs
