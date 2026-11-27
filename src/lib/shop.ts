@@ -16,6 +16,8 @@ export interface Product {
   inStock: boolean; stockText: string; categories: string[]; sizes: string[]; short: string; descHtml: string;
   setItems: string[]; spec: string[]; faq: { q: string; a: string }[]; seoTitle: string; seoDesc: string;
   oldUrl: string; images: Img[]; fixture?: boolean;
+  // Najniższa cena z 30 dni przed obniżką (dyrektywa Omnibus). Bez niej nie pokazujemy promocji.
+  lowest30?: number;
 }
 export interface Category { slug: string; name: string; descHtml: string; seoTitle: string; seoDesc: string; oldUrl: string }
 
@@ -68,6 +70,25 @@ export const line = (p: { name: string }) => (/spartan/i.test(p.name) ? 'Spartan
 export const inCollection = (c: Collection) => products.filter((p) => p.categories.some((s) => c.woo.includes(s)) && !(c.exclude && p.categories.some((s) => c.exclude!.includes(s))) && (!c.line || line(p) === c.line));
 export const catBySlug = (s: string) => categories.find((c) => c.slug === s);
 export const productPath = (p: Product) => `product/${p.slug}`;
+
+// Promocja pokazywana tylko z informacją Omnibus (najniższa cena z 30 dni przed obniżką, pole lowest30).
+// Zgodnie z wytycznymi UOKiK obniżkę (przekreślenie i %) liczymy od lowest30, nie od ceny regularnej.
+// Bez lowest30 sklep pokazuje samą aktualną cenę, bez przekreślenia i etykiety.
+export function promo(p: Product): { ref: number; pct: number } | null {
+  if (!p.onSale || typeof p.lowest30 !== 'number' || !(p.lowest30 > p.price)) return null;
+  return { ref: p.lowest30, pct: Math.floor((1 - p.price / p.lowest30) * 100) };
+}
+
+// Wzór/kolorystyka z nazwy produktu (np. „Shadow Matrix”): ten sam wzór występuje jako rashguard, legginsy, bluza i zestaw.
+// „Plus” to wariant zestawu, nie inny wzór.
+export function design(p: { name: string }): string | null {
+  const m = p.name.match(/(?:Gym Compression|Spartan)\s+(.+)$/);
+  return m ? m[1].replace(/\s*\(.*\)$/, '').replace(/\s+Plus$/, '').trim() : null;
+}
+export const sameDesign = (p: Product) => {
+  const d = design(p);
+  return d ? products.filter((x) => x.id !== p.id && x.inStock && line(x) === line(p) && design(x) === d) : [];
+};
 
 // Pierwsza kolekcja "liść", do której należy produkt (okruszki, linki "wróć").
 export function primaryCollection(p: Product): Collection {
