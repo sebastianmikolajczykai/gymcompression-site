@@ -61,14 +61,14 @@ const ogImage = p.images[0]?.original;
 
         {p.setItems.length > 0 && (
           <div class="kit">
-            <p class="eyebrow">{t(L, 'W zestawie')} {p.setItems.length} {plural(L, p.setItems.length, ['element', 'elementy', 'elementów'])}</p>
+            <p class="kit__title">{t(L, 'W zestawie')} {p.setItems.length} {plural(L, p.setItems.length, ['element', 'elementy', 'elementów'])}</p>
             <ol>{p.setItems.map((it) => <li>{it}</li>)}</ol>
           </div>
         )}
 
         <form class="buy__form" data-buy data-id={p.id} data-name={p.name} data-price={p.price} data-img={imgSrc(p.images[0].base, 480)} data-url={href(path)}>
           <fieldset class="sizes">
-            <legend><span class="eyebrow">{t(L, 'Rozmiar')}</span> <button type="button" class="linkbtn" data-open-sa>{t(L, 'Nie znasz rozmiaru?')}</button></legend>
+            <legend><span class="buy__label">{t(L, 'Rozmiar')}</span> <button type="button" class="linkbtn" data-open-sa>{t(L, 'Nie znasz rozmiaru?')}</button></legend>
             <div class="sizes__grid">
               {p.sizes.map((s) => <label class="size"><input type="radio" name="size" value={s} required /><span>{s}</span></label>)}
             </div>
@@ -99,7 +99,7 @@ const ogImage = p.images[0]?.original;
       <details open><summary><h2>{t(L, 'Opis')}</h2></summary><div class="prose"><p class="todo">Opis produktu zostanie pobrany z obecnego sklepu.</p></div></details>
     )}
     {p.spec.length > 0 && (
-      <details><summary><h2>{t(L, 'Specyfikacja')}</h2></summary><ul class="spec">{p.spec.map((s) => { const [k, ...v] = s.split(':'); return v.length ? <li><span class="eyebrow">{k}</span><span>{v.join(':').trim()}</span></li> : <li class="spec__plain">{s}</li>; })}</ul></details>
+      <details><summary><h2>{t(L, 'Specyfikacja')}</h2></summary><ul class="spec">{p.spec.map((s) => { const [k, ...v] = s.split(':'); return v.length ? <li><span class="spec__k">{k}</span><span>{v.join(':').trim()}</span></li> : <li class="spec__plain">{s}</li>; })}</ul></details>
     )}
     <details><summary><h2>{t(L, 'Tabela rozmiarów')}</h2></summary>
       <div class="details__body"><SizeTable /><p class="note">{t(L, 'A: wzrost, B: obwód klatki piersiowej. W razie wątpliwości skontaktuj się z nami, pomożemy dobrać rozmiar.')} <a href={href('tabela-rozmiarow')}>{t(L, 'Jak się zmierzyć')}</a></p></div>
@@ -147,9 +147,12 @@ const ogImage = p.images[0]?.original;
   .buy__price .price { font-size: 1.5rem; }
   .buy__price s { color: var(--muted); }
   .buy__short { color: var(--graphite); }
-  .kit { padding: var(--s-4); background: var(--chalk); border-radius: 10px; display: grid; gap: var(--s-2); }
-  .kit ol { margin: 0; padding-left: 1.4em; display: grid; gap: .2rem; font-size: var(--t-sm); }
-  .kit li::marker { font-family: var(--f-mono); color: var(--tape); }
+  /* Skład zestawu (wariant C): bez tła, cienkie linie między elementami, zwykły krój tekstu. */
+  .kit { border-top: 1px solid var(--line); padding-top: var(--s-4); display: grid; gap: var(--s-1); }
+  .kit__title { margin: 0; font: 500 var(--t-md)/1.3 var(--f-body); color: var(--ink); }
+  .kit ol { margin: 0; padding: 0; list-style: none; }
+  .kit li { padding: .7rem 0; border-bottom: 1px solid var(--line); line-height: 1.4; }
+  .kit li::first-letter { text-transform: uppercase; }
   .buy__form { display: grid; gap: var(--s-4); }
   .sizes { border: 0; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
   .sizes legend { display: flex; width: 100%; justify-content: space-between; align-items: baseline; padding: 0; margin-bottom: var(--s-3); }
@@ -165,10 +168,10 @@ const ogImage = p.images[0]?.original;
   .sa-box { padding: var(--s-4); border: 1px solid var(--line); border-radius: 12px; background: var(--chalk); }
   .buy__err { color: #b3261e; font-size: var(--t-sm); }
   .buy__ok { font-size: var(--t-sm); color: var(--ok); }
-  .buy__facts { list-style: none; margin: 0; padding: var(--s-4) 0 0; border-top: 1px solid var(--line); display: grid; gap: .45rem; font-size: var(--t-sm); color: var(--graphite); }
-  .buy__facts li { display: flex; gap: .6rem; align-items: center; }
-  .buy__facts li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
-  .buy__facts li:first-child::before { display: none; }
+  /* Listy w kolumnie zakupu w jednym stylu (wariant C): wiersze oddzielone cienką linią, zwykły krój. */
+  .buy__label { font: 500 var(--t-md)/1.3 var(--f-body); color: var(--ink); }
+  .buy__facts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); display: grid; font-size: var(--t-sm); color: var(--graphite); }
+  .buy__facts li { display: flex; gap: .6rem; align-items: center; padding: .7rem 0; border-bottom: 1px solid var(--line); }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
 
   .details { margin-top: var(--s-8); max-width: 920px; }
@@ -184,6 +187,7 @@ const ogImage = p.images[0]?.original;
   .note, .todo { font-size: var(--t-sm); color: var(--muted); }
   .spec { list-style: none; margin: 0; padding: 0; display: grid; }
   .spec li { display: grid; grid-template-columns: 12rem 1fr; gap: var(--s-4); padding: .7rem 0; border-bottom: 1px solid var(--line); }
+  .spec__k { font-size: var(--t-sm); color: var(--muted); }
   .spec__plain { grid-template-columns: 1fr !important; }
   .faq { margin: 0; display: grid; gap: var(--s-4); }
   .faq dt { font-weight: 600; }
