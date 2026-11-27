@@ -4,7 +4,7 @@ import ProductCard from '../components/ProductCard.astro';
 import SizeAdvisor from '../components/SizeAdvisor.astro';
 import SizeTable from '../components/SizeTable.astro';
 import SetCompare from '../components/SetCompare.astro';
-import { byPath } from '../data/catalog';
+import { byPath, company } from '../data/catalog';
 import { products, inCollection, href as hrefPl, pln as plnPl, imgSrc, srcset, posts, productPath, postPath } from '../lib/shop';
 import { langOf, t, plural, pname, HTML_LANG, lp } from '../i18n';
 import { abs } from '../lib/shop';
@@ -147,9 +147,28 @@ const latestPosts = L === 'pl' ? posts.slice(0, 3) : [];
       </div>
     </section>
   )}
+
+  <section class="section section--chalk" aria-labelledby="help-h">
+    <div class="wrap">
+      <div class="section__head"><h2 id="help-h">{t(L, 'Jak możemy pomóc?')}</h2></div>
+      <ul class="help">
+        <li><a href={href('tabela-rozmiarow')}><strong>{t(L, 'Tabela rozmiarów')}</strong><span>{t(L, 'Wymiary i dobór rozmiaru krok po kroku')}</span></a></li>
+        <li><a href={hrefPl('wysylka-i-dostawa')} hreflang="pl"><strong>{t(L, 'Wysyłka i dostawa')}</strong><span>{t(L, 'Darmowa dostawa do Paczkomatu InPost i punktu DPD')}</span></a></li>
+        <li><a href={hrefPl('refund_returns')} hreflang="pl"><strong>{t(L, 'Zwroty i reklamacje')}</strong><span>{t(L, '14 dni na zwrot bez podania przyczyny')}</span></a></li>
+        <li><div class="help__c"><strong>{t(L, 'Kontakt')}</strong><a class="mono" href={`tel:${company.phone.replace(/\s/g, '')}`}>{company.phone}</a><a class="mono" href={`mailto:${company.email}`}>{company.email}</a></div></li>
+      </ul>
+    </div>
+  </section>
 </Base>
 
 <style>
+  .help { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-3); }
+  .help > li > a, .help__c { display: grid; gap: .3rem; height: 100%; padding: var(--s-5) var(--s-4); border: 1px solid var(--line); border-radius: 10px; background: var(--paper); text-decoration: none; transition: border-color .15s; }
+  .help > li > a:hover { border-color: var(--ink); color: var(--ink); }
+  .help span, .help__c a { font-size: var(--t-sm); color: var(--graphite); overflow-wrap: anywhere; }
+  .help__c a:hover { color: var(--ink); }
+  @media (max-width: 900px) { .help { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .help { grid-template-columns: minmax(0, 1fr); } }
   .hero { background: var(--chalk); }
   .hero__in { display: grid; grid-template-columns: 1.05fr 1fr; gap: var(--s-7); align-items: center; padding-block: var(--s-7); }
   .hero__copy { display: grid; gap: var(--s-5); align-content: center; }

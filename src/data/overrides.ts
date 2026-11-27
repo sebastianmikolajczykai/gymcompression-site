@@ -4,7 +4,7 @@
 // - seoDesc: tylko poprawki literówek („meżczyzn”, „material”).
 // - 5w1-spartan-black.short: w sklepie był opis zestawu 2w1 Spartan Blitz; skład z długiego opisu tego produktu.
 // - name: tylko literówka „Streed” → „Street” (zmiany nazw produktów są decyzją Daniela).
-export const productOverrides: Record<string, { short?: string; seoTitle?: string; seoDesc?: string; name?: string }> = {
+export const productOverrides: Record<string, { short?: string; seoTitle?: string; seoDesc?: string; name?: string; lowest30?: number }> = {
   '2w1-gym-compression-active-graphite-plus': {"seoTitle": "Zestaw kompresyjny 2w1 Active Graphite Plus – Gym Compression"},
   '2w1-gym-compression-prime-black-plus': {"seoTitle": "Zestaw sportowy męski 2w1 Prime Black Plus – Gym Compression", "seoDesc": "Zestaw sportowy męski 2w1 Prime Black Plus – rozbudowany strój kompresyjny. Termoaktywny materiał, spodenki kompresyjne. Idealny na siłownię i rower. Sprawdź!"},
   '2w1-gym-compression-street-hood': {"seoTitle": "Zestaw kompresyjny 2w1 Street Hood – Gym Compression"},

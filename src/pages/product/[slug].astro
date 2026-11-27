@@ -5,7 +5,7 @@ import ProductCard from '../../components/ProductCard.astro';
 import SizeAdvisor from '../../components/SizeAdvisor.astro';
 import Shipping from '../../components/Shipping.astro';
 import SizeTable from '../../components/SizeTable.astro';
-import { products, type Product, primaryCollection, trail, href as hrefPl, pln as plnPl, kind, imgSrc, srcset, productPath, inCollection, line, pages } from '../../lib/shop';
+import { products, type Product, primaryCollection, trail, href as hrefPl, pln as plnPl, kind, imgSrc, srcset, productPath, inCollection, line, pages, promo, design, sameDesign } from '../../lib/shop';
 import { langOf, t, tf, plural, pname, lp } from '../../i18n';
 import { breadcrumbLd, productLd, faqLd } from '../../lib/schema';
 
@@ -22,7 +22,10 @@ const path = productPath(p);
 const col = primaryCollection(p);
 const crumbs = [{ name: t(L, 'Strona główna'), path: '' }, ...trail(col).map((c) => ({ name: t(L, c.name), path: c.path })), { name: p.name, path }];
 const ldCrumbs = crumbs.map((x) => ({ ...x, path: lp(L, x.path) }));
-const related = inCollection(col).filter((x) => x.id !== p.id && x.inStock).slice(0, 4);
+// Ten sam wzór w innych produktach (np. rashguard + legginsy + bluza Shadow Matrix), potem reszta kategorii bez powtórek.
+const twins = sameDesign(p0).slice(0, 8);
+const related = inCollection(col).filter((x) => x.id !== p.id && x.inStock && !twins.includes(x)).slice(0, 4);
+const sale = promo(p0);
 // EN/UA: nazwa produktu już zawiera markę, więc bez dopisku typu (krótszy tytuł)
 const rawTitle = p.seoTitle || (L !== 'pl' ? (p.name.includes('Gym Compression') ? p.name : `${p.name} | Gym Compression`) : `${p.name} | ${t(L, kind(p0))} | Gym Compression`);
 // Tytuł z AIOSEO bywa > 65 znaków przez podwójną markę: wtedy usuwamy końcówkę " | Gym Compression".
@@ -56,7 +59,8 @@ const ogImage = p.images[0]?.original;
       <div class="buy__in">
         <p class="eyebrow">{t(L, kind(p0))} · {line(p0)}</p>
         <h1>{p.name}</h1>
-        <p class="buy__price"><span class="price">{pln(p.price)}</span>{p.onSale && p.regularPrice > p.price && <s class="mono">{pln(p.regularPrice)}</s>}</p>
+        <p class="buy__price"><span class="price">{pln(p.price)}</span>{sale && <><s class="mono">{pln(sale.ref)}</s><span class="buy__pct">−{sale.pct}%</span></>}</p>
+        {sale && <p class="buy__omnibus">{t(L, 'Najniższa cena z 30 dni przed obniżką:')} <span class="mono">{pln(sale.ref)}</span></p>}
         {p.short && <p class="buy__short">{p.short}</p>}
 
         {p.setItems.length > 0 && (
@@ -81,8 +85,8 @@ const ogImage = p.images[0]?.original;
           <p class="buy__ok" data-ok hidden role="status">{t(L, 'Dodano do koszyka.')} <a href={href('koszyk')}>{t(L, 'Przejdź do koszyka')}</a></p>
           <ul class="buy__facts">
             <li><span class="dot" style={p.inStock ? '' : 'background:var(--warn)'}></span>{p.inStock ? (p.stockText || t(L, 'Dostępny')) : t(L, 'Brak w magazynie')}</li>
-            <li>{t(L, 'Płatności online Przelewy24')}</li>
-            <li>{t(L, 'Wysyłka i zwroty:')} <a href="#dostawa">{t(L, 'szczegóły')}</a></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg>{t(L, '14 dni na zwrot bez podania przyczyny')} <a href="#dostawa">{t(L, 'szczegóły')}</a></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>{t(L, 'Bezpieczne płatności online Przelewy24')}</li>
           </ul>
           <Shipping />
         </form>
@@ -114,6 +118,16 @@ const ogImage = p.images[0]?.original;
       </div>
     </details>
   </div>
+
+  {twins.length > 0 && (
+    <section class="section" aria-labelledby="twin-h">
+      <div class="wrap">
+        <div class="section__head"><h2 id="twin-h">{t(L, 'Ten sam wzór')}: {design(p0)}</h2></div>
+        <p class="twin__lead">{t(L, 'Dobierz pozostałe elementy w tej samej kolorystyce.')}</p>
+        <div class="grid">{twins.map((r) => <ProductCard p={r} />)}</div>
+      </div>
+    </section>
+  )}
 
   {related.length > 0 && (
     <section class="section" aria-labelledby="rel-h">
@@ -172,6 +186,12 @@ const ogImage = p.images[0]?.original;
   .buy__label { font: 500 var(--t-md)/1.3 var(--f-body); color: var(--ink); }
   .buy__facts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); display: grid; font-size: var(--t-sm); color: var(--graphite); }
   .buy__facts li { display: flex; gap: .6rem; align-items: center; padding: .7rem 0; border-bottom: 1px solid var(--line); }
+  .buy__facts li { flex-wrap: wrap; }
+  .buy__facts svg { flex: none; width: 1.15rem; height: 1.15rem; color: var(--ink); }
+  .buy__facts .dot { margin-inline: calc((1.15rem - 8px) / 2); }
+  .buy__pct { margin-left: .5rem; padding: .2rem .45rem; border-radius: 4px; background: #b3261e; color: #fff; font: 600 .8rem/1 var(--f-mono); vertical-align: middle; }
+  .buy__omnibus { margin-top: -.4rem; font-size: var(--t-xs); color: var(--muted); }
+  .twin__lead { margin: calc(-1 * var(--s-3)) 0 var(--s-5); color: var(--graphite); }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
 
   .details { margin-top: var(--s-8); max-width: 920px; }
