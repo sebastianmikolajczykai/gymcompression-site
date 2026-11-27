@@ -16,8 +16,8 @@ const topics = ['rashguard', 'legginsy', 'spodenki', 'zestaw', 'bluza', 'rozmiar
     <h1>Blog</h1>
     <p class="blog-lead">Jak dobrać odzież kompresyjną, rozmiar i zestaw do swojego treningu. Wybierz temat albo wpisz, czego szukasz.</p>
     <div class="blog-tools" data-blog>
-      <label class="blog-search"><span class="sr-only">Szukaj w poradniku</span>
-        <input type="search" placeholder="Szukaj, np. rozmiar rashguardu" data-q autocomplete="off" />
+      <label class="blog-search"><span class="sr-only">Szukaj na blogu</span>
+        <input type="search" placeholder="Szukaj tematu, który cię interesuje" data-q autocomplete="off" />
       </label>
       <div class="chips" role="group" aria-label="Tematy">
         {topics.map((w) => <button type="button" class="chip" data-topic={w} aria-pressed="false">{w}</button>)}
